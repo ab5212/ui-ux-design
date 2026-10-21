@@ -41,16 +41,16 @@ Replace `<owner>/<repo>` with this repository's GitHub path. The same repo is a 
 
 ```bash
 claude plugin marketplace add <owner>/<repo>
-claude plugin install ui-ux-design@ui-ux-skills
+claude plugin install ui-ux-design@ui-ux-design
 ```
 
-Or inside a session: `/plugin marketplace add <owner>/<repo>`, then `/plugin install ui-ux-design@ui-ux-skills`. Run `/reload-plugins` or restart. To share it with your team, add `--scope project`. The skill appears namespaced as `ui-ux-design:designing-interfaces` and also loads automatically when a task involves UI.
+Or inside a session: `/plugin marketplace add <owner>/<repo>`, then `/plugin install ui-ux-design@ui-ux-design`. Run `/reload-plugins` or restart. To share it with your team, add `--scope project`. The skill appears namespaced as `ui-ux-design:designing-interfaces` and also loads automatically when a task involves UI.
 
 ### OpenAI Codex
 
 ```bash
 codex plugin marketplace add <owner>/<repo>
-codex plugin add ui-ux-design@ui-ux-skills
+codex plugin add ui-ux-design@ui-ux-design
 ```
 
 Check with `codex plugin list`.
@@ -58,8 +58,8 @@ Check with `codex plugin list`.
 ### Update
 
 ```bash
-claude plugin marketplace update ui-ux-skills && claude plugin update ui-ux-design@ui-ux-skills
-codex plugin marketplace upgrade ui-ux-skills      # Git-backed marketplaces
+claude plugin marketplace update ui-ux-design && claude plugin update ui-ux-design@ui-ux-design
+codex plugin marketplace upgrade ui-ux-design      # Git-backed marketplaces
 ```
 
 Versions are pinned by the `version` field in the manifests, so users get an update only when it changes (see `CHANGELOG.md`).

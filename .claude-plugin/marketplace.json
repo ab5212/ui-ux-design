@@ -1,0 +1,14 @@
+{
+  "name": "ui-ux-design",
+  "owner": { "name": "ab5212" },
+  "metadata": { "description": "UI/UX design skill for any web front-end." },
+  "plugins": [
+    {
+      "name": "ui-ux-design",
+      "source": "./plugins/ui-ux-design",
+      "description": "Expert UI/UX rules for any web front-end: tokens, typography, color, responsive layouts, component specs, WCAG 2.2 AA accessibility, screenshot-to-code, code audits and a localhost style playground. Asks before building or changing anything.",
+      "version": "1.2.0",
+      "category": "design"
+    }
+  ]
+}
