@@ -2,6 +2,10 @@
 
 Bump `version` in **both** plugin manifests for every release; users only receive updates when it changes.
 
+## 1.4.0
+- Playground **Edit elements** (Figma-style): in Your app, click any element of the running app to select it and edit its text color, size, weight, alignment, background, opacity, padding, radius, border, shadow and spacing above and below, live. Apply to one element or all similar ones, select the parent, and Save to code writes `playground-overrides.css` and `playground-changes.json`. Your app accepts localhost addresses only and needs no change to the app: the playground opens it through a loopback proxy that adds the bridge script (HTML only; websockets for hot reload pass through).
+- Playground fixes: the nested-radius demo had uneven padding when a caption wrapped; the Save button now stays visible in the Element tab.
+
 ## 1.3.2
 - README: how to turn on auto-update in Claude Code and how to refresh an existing playground after a plugin update. No code changes.
 

@@ -79,7 +79,7 @@ export function RadiusFoundation() {
               { label: "Concentric", r: outer, good: true },
               { label: "Same radius (pinched corners)", r: inner, good: false },
             ].map((v) => (
-              <figure key={v.label} className="grid gap-2">
+              <figure key={v.label} className="grid content-start gap-2">
                 <div className="border-2 border-primary/40 bg-accent" style={{ padding: pad, borderRadius: v.r }}>
                   <div className="grid h-28 place-items-center bg-primary text-sm font-medium text-primary-foreground" style={{ borderRadius: inner }}>
                     inner {inner}px

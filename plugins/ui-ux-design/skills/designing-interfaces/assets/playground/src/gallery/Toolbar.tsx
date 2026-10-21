@@ -24,6 +24,24 @@ function Segmented<T extends string>({ label, value, options, onChange }: { labe
   );
 }
 
+/** Writes everything (style, colors, layout, element edits) to the user's files. */
+export function SaveBar({ settings, className }: { settings: Settings; className?: string }) {
+  const [status, setStatus] = useState("");
+  const onSave = () => {
+    setStatus("Saving…");
+    save(settings).then((r) => setStatus(`Saved to ${r.file}.${r.files.length ? " Also wrote " + r.files.join(", ") + "." : ""}${fontLinks(settings).length ? " Add the Google Fonts link to your app: " + fontLinks(settings).join(" ") : ""}`), (e: Error) => setStatus(`Not saved: ${e.message}`));
+  };
+  return (
+    <div className={cn("sticky bottom-0 z-10 -mx-1 mt-6 grid gap-2 border-t bg-surface px-1 pb-5 pt-4", className)}>
+      <button type="button" onClick={onSave}
+        className="h-10 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+        Save to code
+      </button>
+      <p role="status" className="min-h-4 break-all text-xs text-muted-foreground">{status || "Writes these choices into your files."}</p>
+    </div>
+  );
+}
+
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <fieldset className="grid gap-3 border-0 p-0">
@@ -38,15 +56,10 @@ const GOOGLE_FONTS = ["Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Pop
 const HUES = "linear-gradient(90deg," + [0, 60, 120, 180, 240, 300, 360].map((h) => `oklch(0.7 0.15 ${h})`).join(",") + ")";
 
 /** Grouped style controls. Used in the right-hand panel on wide screens and inside a dialog on small ones. */
-export function Toolbar({ settings, update, className }: { settings: Settings; update: (p: Partial<Settings>) => void; className?: string }) {
+export function Toolbar({ settings, update, className, footer = true }: { settings: Settings; update: (p: Partial<Settings>) => void; className?: string; footer?: boolean }) {
   const hueId = useId();
   const styleId = useId();
   const fontId = useId();
-  const [status, setStatus] = useState("");
-  const onSave = () => {
-    setStatus("Saving…");
-    save(settings).then((r) => setStatus(`Saved to ${r.file}.${fontLinks(settings).length ? " Add the Google Fonts link to your app: " + fontLinks(settings).join(" ") : ""}`), (e: Error) => setStatus(`Not saved: ${e.message}`));
-  };
   return (
     <div className={cn("flex h-full flex-col", className)}>
       <div className="grid flex-1 content-start gap-7">
@@ -111,13 +124,7 @@ export function Toolbar({ settings, update, className }: { settings: Settings; u
           <Switch label="Reduced motion" checked={settings.reducedMotion} onCheckedChange={(reducedMotion) => update({ reducedMotion })} className="items-center" />
         </Group>
       </div>
-      <div className="sticky bottom-0 -mx-1 mt-6 grid gap-2 border-t bg-surface px-1 pt-4">
-        <button type="button" onClick={onSave}
-          className="h-10 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-          Save to code
-        </button>
-        <p role="status" className="min-h-4 break-all text-xs text-muted-foreground">{status || "Writes these choices into your tokens file."}</p>
-      </div>
+      {footer && <SaveBar settings={settings} />}
     </div>
   );
 }

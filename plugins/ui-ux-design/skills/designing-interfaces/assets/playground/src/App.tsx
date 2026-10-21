@@ -6,8 +6,10 @@ import { ToastProvider } from "@/components/ui/Display";
 import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/Dialog";
 import { Section } from "@/gallery/Section";
-import { Toolbar } from "@/gallery/Toolbar";
+import { SaveBar, Toolbar } from "@/gallery/Toolbar";
 import { AppPreview } from "@/gallery/AppPreview";
+import { ElementPanel } from "@/gallery/ElementPanel";
+import { useEdits, type Selection } from "@/lib/edits";
 import { ResponsivePreview } from "@/gallery/ResponsivePreview";
 import { ColorFoundation } from "@/gallery/foundations/Color";
 import { TypeFoundation } from "@/gallery/foundations/Type";
@@ -31,6 +33,10 @@ export default function App() {
   const [settings, update] = useSettings(!isFrame);
   const [active, setActive] = useState("color");
   const [view, setView] = useState<"playground" | "app">("playground");
+  const { edits, set: setEdit, clear: clearEdits } = useEdits();
+  const [editMode, setEditMode] = useState(false);
+  const [selection, setSelection] = useState<Selection | null>(null);
+  const [panel, setPanel] = useState<"customize" | "element">("customize");
 
   useEffect(() => {
     const ids = SECTIONS.flatMap((g) => g.items.map(([id]) => id as string));
@@ -93,7 +99,7 @@ export default function App() {
             ))}
           </nav>}
 
-          {view === "app" ? <AppPreview settings={settings} /> : <main id="main" className="min-w-0 flex-1 pb-24 pt-6">
+          {view === "app" ? <AppPreview settings={settings} edits={edits} editMode={editMode} setEditMode={(on) => { setEditMode(on); setPanel(on ? "element" : "customize"); if (!on) setSelection(null); }} onSelect={(sel) => { setSelection(sel); if (sel) setPanel("element"); }} /> : <main id="main" className="min-w-0 flex-1 pb-24 pt-6">
             <div className="mb-6 lg:hidden">
               <label htmlFor="jump" className="sr-only">Jump to section</label>
               <select id="jump" className="h-10 w-full rounded-md border border-input bg-surface px-3 text-base"
@@ -147,9 +153,19 @@ export default function App() {
             </Section>
           </main>}
 
-          <aside aria-label="Customize" className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-72 shrink-0 overflow-y-auto border-s bg-surface px-5 py-6 xl:block">
-            <h2 className="mb-5 text-base font-semibold">Customize</h2>
-            <Toolbar settings={settings} update={update} className="min-h-[calc(100%-2.75rem)]" />
+          <aside aria-label="Customize" className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-72 shrink-0 overflow-y-auto border-s bg-surface px-5 pt-6 xl:block">
+            {view === "app" ? (
+              <div role="tablist" aria-label="Panel" className="mb-5 inline-flex gap-1 rounded-lg bg-muted p-1">
+                {([["customize", "Customize"], ["element", "Element"]] as const).map(([k, label]) => (
+                  <button key={k} type="button" role="tab" aria-selected={panel === k} onClick={() => setPanel(k)}
+                    className={`h-8 rounded-md px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring ${panel === k ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{label}</button>
+                ))}
+              </div>
+            ) : <h2 className="mb-5 text-base font-semibold">Customize</h2>}
+            {view === "app" && panel === "element"
+              ? <ElementPanel selection={selection} edits={edits} set={setEdit} clear={clearEdits} />
+              : <Toolbar settings={settings} update={update} footer={false} />}
+            <SaveBar settings={settings} />
           </aside>
         </div>
       </ToastProvider>

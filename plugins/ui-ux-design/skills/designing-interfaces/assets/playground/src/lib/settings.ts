@@ -69,12 +69,13 @@ export function buildCss(s: Settings) {
   return `${PRESETS[s.preset] ?? ""}\n:root {\n${[...vars, ...colors("light")].join("\n")}\n}\n.dark {\n${colors("dark").join("\n")}\n}\n`;
 }
 
+const readEdits = () => { try { return JSON.parse(localStorage.getItem("playground-edits") || "{}"); } catch { return {}; } };
 const readDashboard = () => { try { return JSON.parse(localStorage.getItem("playground-dashboard") || "null"); } catch { return null; } };
 
 export async function save(s: Settings) {
-  const res = await fetch("/__save-tokens", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ preset: s.preset, vars: toVars(s), colors: s.colors, dashboard: readDashboard() }) });
+  const res = await fetch("/__save-tokens", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ preset: s.preset, vars: toVars(s), colors: s.colors, dashboard: readDashboard(), edits: readEdits() }) });
   if (!res.ok) throw new Error(await res.text());
-  return (await res.json()) as { file: string };
+  return (await res.json()) as { file: string; files: string[] };
 }
 
 const KEY = "playground-settings";
