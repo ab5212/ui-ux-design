@@ -172,7 +172,7 @@ bash <this-skill-dir>/scripts/scaffold-playground.sh ./ui-playground   # copies 
 cd ui-playground && npm run dev                                         # http://localhost:5173
 ```
 
-To preview a style from Step 1 before building, add `--style glass` (`flat`, `material`, `soft`, `glass`, `clay`, `skeuomorphic`, `brutalist`, `editorial`, `monochrome`, `colorblock`, `retro`, `minimalvintage`, `retrofuturistic` or `artdeco`). To preview the project's own tokens, add `--tokens path/to/tokens.css` to the scaffold command. If the variable names differ from this skill's, edit the `@theme inline` block in `ui-playground/src/styles/tokens.css` to match. The script needs Node.js 20.19+ and refuses to overwrite a non-empty directory.
+To refresh a playground the user made earlier (after a plugin update), add `--update` and the same folder; it keeps their saved choices. To preview a style from Step 1 before building, add `--style glass` (`flat`, `material`, `soft`, `glass`, `clay`, `skeuomorphic`, `brutalist`, `editorial`, `monochrome`, `colorblock`, `retro`, `minimalvintage`, `retrofuturistic` or `artdeco`). To preview the project's own tokens, add `--tokens path/to/tokens.css` to the scaffold command. If the variable names differ from this skill's, edit the `@theme inline` block in `ui-playground/src/styles/tokens.css` to match. The script needs Node.js 20.19+ and refuses to overwrite a non-empty directory.
 
 Audit the code of any front-end project (any stack), or the contrast of a token file, at any time:
 

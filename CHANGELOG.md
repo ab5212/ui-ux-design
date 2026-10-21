@@ -2,6 +2,9 @@
 
 Bump `version` in **both** plugin manifests for every release; users only receive updates when it changes.
 
+## 1.3.1
+- `scaffold-playground.sh --update` refreshes an existing playground to the installed skill version, keeping the saved Save-to-code choices and `playground-layout.json`, and backing up the old `tokens.css`. Updating the plugin never changed playgrounds already created.
+
 ## 1.3.0
 - Fonts and icons: every UI the skill builds uses Google Fonts and Material Symbols (new `references/icons-fonts.md`, non-negotiable 24, chat edition and paste instructions updated). The playground swapped `lucide-react` for Material Symbols and loads Inter, Source Serif 4 and Roboto Mono from Google Fonts.
 - Styles: 9 new presets (flat, material, skeuomorphic, monochromatic, color blocking, retro / vintage, minimal vintage, retro-futuristic, art deco), 14 in all, each with light and dark themes and passing the contrast check at every hue tested (12 hues). The skill now offers them at the start (filtered by product type, with a "show me all" option) and offers layout add-ons (cards, grid, single page, fullscreen, typography-led, asymmetrical, illustrative, parallax). New style index in `visual-styles.md`. `scaffold-playground.sh --style` loads a preset's Google Fonts.

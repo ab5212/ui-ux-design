@@ -180,6 +180,8 @@ cd ui-playground && npm run dev        # http://localhost:5173
 
 The playground shows every foundation and component in all states, with theme, density, radius, brand hue, border, shadow, font, text size, spacing and reduced-motion controls, live contrast scores, and a viewport preview at 360, 768, 1024, 1440 and 1920px.
 
+**Updating an existing playground.** A playground is a copy made when you ran the scaffold script, so updating the plugin does not change it. After updating the plugin, run `bash plugins/ui-ux-design/skills/designing-interfaces/scripts/scaffold-playground.sh ./ui-playground --update` (use your playground's folder; the plugin's path under `~/.claude/plugins/cache/` also works). It replaces the app code, keeps your saved Save-to-code choices and `playground-layout.json`, and backs up the old tokens as `src/styles/tokens.css.bak`.
+
 **Edit any color or font.** The Colors group lists every semantic color with pickers for the fill and its text color, live contrast ratios and a per-color reset. Change a fill and the text color switches to white or near-black if the pair drops below 4.5:1. The Font box accepts any Google Font. Colors are edited per theme (light or dark).
 
 **Preview your own app.** Choose **Your app** in the header, enter your dev-server address and add one line to your app's `<head>` while previewing (the playground shows it): `<script src="http://localhost:5173/bridge.js"></script>`. Every color, font and style change then appears in your real pages live. It works when the app uses this skill's color variables, it is dev-only, and the bridge accepts messages only from the playground that served it.
