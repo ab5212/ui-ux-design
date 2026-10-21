@@ -1,0 +1,203 @@
+# designing-interfaces
+
+An agent skill, packaged as a plugin, that gives AI assistants the judgment of a senior product designer for **any web front-end**: HTML and CSS, Tailwind, React, Vue, Svelte, Angular, Astro, Bootstrap, server templates.
+
+- **It asks before it builds.** Which look, which framework, what to change. It never picks your visual style silently.
+- **Screenshot to code.** Give it a screenshot or mockup and it asks what you want done with it, then returns HTML, CSS or your framework of choice.
+- **Audits existing code.** It scans your project, shows the problems as numbered choices, and changes only what you approve.
+- **Real design rules, not vibes:** tokens, type scale, color and dark mode, concentric radius, component specs, responsive layouts from 320px phones to ultrawide, WCAG 2.2 AA.
+- **A live playground on localhost** to preview a style before you commit to it.
+
+## Where it works
+
+| Where | How | Status |
+|---|---|---|
+| **Claude Code** | Plugin | Install, update and validation tested |
+| **OpenAI Codex** | Plugin | Install tested |
+| **Gemini CLI** | Copy the skill to `.gemini/skills/` or `.agents/skills/`, or `gemini skills install <url>` | Per Gemini CLI docs; not tested |
+| **ChatGPT** (web, desktop, mobile) | Upload the chat package as a skill, select it with `@` | Per OpenAI docs; upload path not tested |
+| **Claude.ai, Claude Desktop** | Upload the chat package as a custom skill | Per Anthropic docs; not tested |
+| **Gemini app** | Chat package, or paste the instructions into a Gem | Reported to reject skills with scripts, so use the chat package; not tested |
+| **Custom GPT, Gem, Claude Project** | Paste `paste-instructions.md` | Works anywhere with an instructions field |
+| **Cursor, Windsurf, Copilot** | Use the paste file as rules / `AGENTS.md` | Not tested |
+
+Platform features change quickly. Confirm against each vendor's current documentation.
+
+### What changes by environment
+
+| | Coding agent (Project mode) | Chat app (Chat mode) |
+|---|---|---|
+| Sees your code | Yes | Only what you paste |
+| Existing code | Scans it, proposes numbered changes, **asks which to apply** | Reviews what you paste, asks what you want |
+| Screenshot | Asks what to do and which look, then writes into your project | Asks what to do, which look and which language, then gives you a complete file |
+| Output | Files in your project, in its own conventions | One runnable file, or each file under its path |
+| Tools | Audit script, contrast checker, localhost playground | None; the rules and starter CSS are built in |
+
+## Install as a plugin (Claude Code and Codex)
+
+Replace `<owner>/<repo>` with this repository's GitHub path. The same repo is a marketplace for both tools.
+
+### Claude Code
+
+```bash
+claude plugin marketplace add <owner>/<repo>
+claude plugin install ui-ux-design@ui-ux-skills
+```
+
+Or inside a session: `/plugin marketplace add <owner>/<repo>`, then `/plugin install ui-ux-design@ui-ux-skills`. Run `/reload-plugins` or restart. To share it with your team, add `--scope project`. The skill appears namespaced as `ui-ux-design:designing-interfaces` and also loads automatically when a task involves UI.
+
+### OpenAI Codex
+
+```bash
+codex plugin marketplace add <owner>/<repo>
+codex plugin add ui-ux-design@ui-ux-skills
+```
+
+Check with `codex plugin list`.
+
+### Update
+
+```bash
+claude plugin marketplace update ui-ux-skills && claude plugin update ui-ux-design@ui-ux-skills
+codex plugin marketplace upgrade ui-ux-skills      # Git-backed marketplaces
+```
+
+Versions are pinned by the `version` field in the manifests, so users get an update only when it changes (see `CHANGELOG.md`).
+
+## Install as a plain skill (any agent that reads `SKILL.md`)
+
+```bash
+# Claude Code: one project, or all projects
+mkdir -p .claude/skills && cp -r plugins/ui-ux-design/skills/designing-interfaces .claude/skills/
+mkdir -p ~/.claude/skills && cp -r plugins/ui-ux-design/skills/designing-interfaces ~/.claude/skills/
+
+# Codex and Gemini CLI (both read .agents/skills/)
+mkdir -p .agents/skills && cp -r plugins/ui-ux-design/skills/designing-interfaces .agents/skills/
+mkdir -p ~/.agents/skills && cp -r plugins/ui-ux-design/skills/designing-interfaces ~/.agents/skills/
+```
+
+Restart the agent after installing.
+
+## Install in a chat app
+
+Chat apps can't run scripts or read project folders, and some limit what a skill may contain. The **chat edition** is the same guidance with a short description (Claude.ai allows 200 characters), no scripts, and the starter CSS inlined as text.
+
+```bash
+bash plugins/ui-ux-design/skills/designing-interfaces/scripts/build-chat-package.sh ./dist
+# → dist/designing-interfaces-chat.zip   (SKILL.md at the zip root)
+```
+
+Upload `designing-interfaces-chat.zip` as a custom skill in ChatGPT, Claude.ai or the Gemini app.
+
+For a **Custom GPT, Gem, Claude Project** or any product with an instructions field and no skill upload, paste the contents of `plugins/ui-ux-design/skills/designing-interfaces/assets/chat/paste-instructions.md` (about 5,800 characters).
+
+Then send a screenshot. It asks what you want before generating anything.
+
+## How it behaves
+
+**A screenshot arrives.** It does not generate. It asks what to do (recreate it, polish it, redesign it, review only, change something specific), which look if you want a redesign, and the output technology. Then it reads the image top to bottom, maps colors and type to tokens, and builds. If the screenshot breaks accessibility (low contrast, tiny tap targets, no focus style) it builds the corrected version, tells you what it changed, and offers to match the original.
+
+**You ask it to improve existing code.** It runs the audit, then shows something like this and waits:
+
+```
+A. Accessibility, 3 fixes (2 are blockers)
+  1. [blocker] Pinch-zoom is disabled in index.html. Remove maximum-scale. 1 line, no risk.
+  2. [blocker] 4 images have no alt text. I'd write it from context; you review it.
+  3. [major] 6 clickable <div>s. Convert to <button>; same look. 5 files, low risk.
+B. Responsive, 2 fixes ...
+Which should I apply? "1,2,3", "all of A", "all blockers", "everything", or "none".
+```
+
+**You ask for something new with no style.** It asks one short message: look and feel (only styles that fit your product), brand color, main device, and output technology if there is no project. Your answer is applied as a token preset and saved to `DESIGN.md`, so later sessions don't ask again. It skips the questions when `DESIGN.md` exists, you already named a style, the project already has a design language, or the change is small. In a headless run it picks the recommended default, marks it as assumed, and says how to change it.
+
+Styles: clean and minimal (the base tokens), soft and friendly, glass, clay, bold and raw (neo-brutalism), editorial. Neumorphism is deliberately not offered for controls because its edges fail contrast.
+
+## Output technologies
+
+Plain HTML + CSS (the universal baseline, build-free), Tailwind v3 and v4, React and Next.js, Vue and Nuxt, Svelte and SvelteKit, Angular, Astro, Solid, web components (Lit), Bootstrap, CSS-in-JS, Sass and Less, and server-rendered templates (PHP, Rails, Django, Laravel, Jinja, Twig, Liquid). See `references/frameworks.md`. Out of scope: email HTML and native mobile apps (the principles carry over; use each platform's own guidelines).
+
+## What's inside
+
+```
+.claude-plugin/marketplace.json            # Claude Code marketplace catalog
+.agents/plugins/marketplace.json           # Codex marketplace catalog
+plugins/ui-ux-design/
+├── .claude-plugin/plugin.json             # Claude Code manifest
+├── .codex-plugin/plugin.json              # Codex manifest
+└── skills/designing-interfaces/
+    ├── SKILL.md                           # modes, ask-first rules, workflow, defaults, non-negotiables
+    ├── references/                        # loaded only when a task needs them
+    │   ├── environments.md                # project vs chat mode, what to ask, where it runs
+    │   ├── screenshot-to-code.md          # ask, read the image, map to tokens, build, report
+    │   ├── audit-existing-code.md         # scan, propose numbered choices, apply only what's approved
+    │   ├── frameworks.md                  # HTML/CSS baseline and every stack, tested code samples
+    │   ├── direction.md                   # when to ask, the questions, styles, DESIGN.md template
+    │   ├── tokens.md  typography.md  color.md  spacing-layout.md  shape-elevation.md  motion.md
+    │   ├── responsive.md                  # size classes, navigation per size, touch vs mouse
+    │   ├── components-actions.md  components-forms.md  components-overlays.md
+    │   ├── components-navigation.md  components-data-display.md
+    │   └── accessibility.md  ux-patterns.md  visual-styles.md  review-checklist.md  glossary.md
+    ├── assets/
+    │   ├── tokens.css                     # Tailwind v4 tokens, light + dark OKLCH
+    │   ├── tokens.plain.css               # the same tokens for any stack, no build step
+    │   ├── plain/                         # components.css + example.html (plain HTML + CSS kit)
+    │   ├── styles/                        # soft, glass, clay, brutalist, editorial presets
+    │   ├── chat/                          # chat-edition SKILL.md and the single-paste instructions
+    │   └── playground/                    # Vite + React + TypeScript + Tailwind v4 + Radix gallery
+    └── scripts/
+        ├── audit-frontend.mjs             # scans any front-end project for problems
+        ├── check-contrast.mjs             # WCAG 2.2 + APCA audit of token files and style presets
+        ├── scaffold-playground.sh         # copy the playground, optionally with --style
+        └── build-chat-package.sh          # builds the chat-edition zip
+```
+
+Both plugin manifests point at the same `skills/` folder, so there is one source of truth.
+
+## Tools
+
+**Audit any front-end project** (no dependencies, Node 18+):
+
+```bash
+node plugins/ui-ux-design/skills/designing-interfaces/scripts/audit-frontend.mjs path/to/project
+```
+
+Scans HTML, CSS, Sass, Less, JS/TS/JSX/TSX, Vue, Svelte, Astro and common server templates for missing alt text, disabled zoom, removed focus outlines, click handlers on non-interactive elements, missing labels, fixed widths, tiny text, `100vh`, hardcoded colors, motion without reduced-motion handling, and more. It is a pattern scanner: findings marked "verify" can be false positives.
+
+**Check contrast** of a token file, or of a style preset layered on the base:
+
+```bash
+node plugins/ui-ux-design/skills/designing-interfaces/scripts/check-contrast.mjs tokens.css [styles/glass.css]
+```
+
+Exits 1 if any semantic pair fails WCAG 2.2 AA, and exits 2 if it finds no pairs at all.
+
+**Preview a style on localhost** (Node 20.19+ or 22.12+):
+
+```bash
+bash plugins/ui-ux-design/skills/designing-interfaces/scripts/scaffold-playground.sh ./ui-playground --style glass
+cd ui-playground && npm run dev        # http://localhost:5173
+```
+
+The playground shows every foundation and component in all states, with theme, density, radius, brand hue and reduced-motion toggles, live contrast scores, and a viewport preview at 360, 768, 1024, 1440 and 1920px.
+
+## Sources
+
+The defaults compare and condense guidance from: Material Design 3, Apple Human Interface Guidelines, Microsoft Fluent 2, IBM Carbon, Atlassian Design System, GitHub Primer, Shopify Polaris, GOV.UK Design System, Radix UI and shadcn/ui, Tailwind CSS, WCAG 2.2 and the WAI-ARIA Authoring Practices, Nielsen Norman Group, Laws of UX, and Butterick's Practical Typography. Design systems change between versions; check the official documentation before quoting a value as a system's spec.
+
+## Contributing
+
+Keep `SKILL.md` under 500 lines and references focused on one topic, with concrete values and a stated reason for each rule. Before opening a pull request:
+
+```bash
+S=plugins/ui-ux-design/skills/designing-interfaces
+claude plugin validate . && claude plugin validate ./plugins/ui-ux-design --strict
+for st in soft glass clay brutalist editorial; do node $S/scripts/check-contrast.mjs $S/assets/tokens.css $S/assets/styles/$st.css || break; done
+node $S/scripts/check-contrast.mjs $S/assets/tokens.plain.css
+bash $S/scripts/build-chat-package.sh ./dist
+```
+
+Bump `version` in **both** plugin manifests and add a line to `CHANGELOG.md` for every release.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

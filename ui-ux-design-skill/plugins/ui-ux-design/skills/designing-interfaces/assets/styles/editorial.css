@@ -1,0 +1,75 @@
+/*
+  Style preset: editorial
+  Editorial / Swiss: strict grid, near-zero radius, hairline borders instead of shadows, tight large type, one accent color. Content sites, docs, portfolios, data-heavy and enterprise tools.
+
+  How to use: append this file AFTER tokens.css (or merge the values into your own tokens).
+  It redefines every color token for BOTH :root and .dark, because :root and .dark have equal
+  specificity and the later rule wins; a color defined in only one block would leak into the other theme.
+  Check it:  node scripts/check-contrast.mjs assets/tokens.css assets/styles/editorial.css
+*/
+:root {
+  --radius: 0rem;
+  --duration-fast: 90ms;
+  --duration-base: 150ms;
+  --duration-slow: 220ms;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: 0 4px 12px hsl(var(--shadow-color) / 0.08);
+  --shadow-lg: 0 8px 24px hsl(var(--shadow-color) / 0.10);
+  --shadow-xl: 0 16px 40px hsl(var(--shadow-color) / 0.14);
+}
+:root {
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.14 0 0);
+  --surface: oklch(0.99 0 0);
+  --surface-raised: oklch(1 0 0);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.42 0 0);
+  --primary: oklch(0.5 0.2 var(--brand-h));
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.94 0 0);
+  --secondary-foreground: oklch(0.14 0 0);
+  --accent: oklch(0.94 0.03 var(--brand-h));
+  --accent-foreground: oklch(0.3 0.1 var(--brand-h));
+  --destructive: oklch(0.52 0.2 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.48 0.12 150);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.82 0.15 85);
+  --warning-foreground: oklch(0.22 0.05 60);
+  --info: oklch(0.5 0.13 235);
+  --info-foreground: oklch(0.99 0 0);
+  --border: oklch(0.86 0 0);
+  --input: oklch(0.5 0 0);
+  --ring: oklch(0.5 0.2 var(--brand-h));
+}
+
+.dark {
+  --background: oklch(0.13 0 0);
+  --foreground: oklch(0.96 0 0);
+  --surface: oklch(0.13 0 0);
+  --surface-raised: oklch(0.17 0 0);
+  --muted: oklch(0.2 0 0);
+  --muted-foreground: oklch(0.72 0 0);
+  --primary: oklch(0.74 0.15 var(--brand-h));
+  --primary-foreground: oklch(0.13 0.02 var(--brand-h));
+  --secondary: oklch(0.22 0 0);
+  --secondary-foreground: oklch(0.96 0 0);
+  --accent: oklch(0.26 0.04 var(--brand-h));
+  --accent-foreground: oklch(0.92 0.04 var(--brand-h));
+  --destructive: oklch(0.74 0.16 25);
+  --destructive-foreground: oklch(0.15 0.02 25);
+  --success: oklch(0.76 0.13 150);
+  --success-foreground: oklch(0.15 0.02 150);
+  --warning: oklch(0.84 0.14 85);
+  --warning-foreground: oklch(0.2 0.04 60);
+  --info: oklch(0.76 0.11 235);
+  --info-foreground: oklch(0.15 0.02 235);
+  --border: oklch(1 0 0 / 0.2);
+  --input: oklch(0.66 0 0);
+  --ring: oklch(0.74 0.15 var(--brand-h));
+}
+
+/* Editorial: separate with hairlines and space, not boxes. Headings are large, tight and left-aligned. */
+h1, h2, h3 { letter-spacing: -0.025em; text-wrap: balance; }
+p { text-wrap: pretty; }

@@ -1,0 +1,70 @@
+/*
+  Style preset: clay
+  Claymorphism: puffy, pastel, 3-D soft shapes with inner highlights and big radii. Playful consumer apps, kids, onboarding, illustrations. Not for dense data UI.
+
+  How to use: append this file AFTER tokens.css (or merge the values into your own tokens).
+  It redefines every color token for BOTH :root and .dark, because :root and .dark have equal
+  specificity and the later rule wins; a color defined in only one block would leak into the other theme.
+  Check it:  node scripts/check-contrast.mjs assets/tokens.css assets/styles/clay.css
+*/
+:root {
+  --radius: 1.125rem;
+  --shadow-xs: 0 2px 4px hsl(var(--shadow-color) / 0.10), inset 0 1px 2px hsl(0 0% 100% / 0.7);
+  --shadow-sm: 0 4px 10px hsl(var(--shadow-color) / 0.12), inset 0 -3px 6px hsl(var(--shadow-color) / 0.07), inset 0 3px 6px hsl(0 0% 100% / 0.75);
+  --shadow-md: 0 8px 18px hsl(var(--shadow-color) / 0.14), inset 0 -4px 8px hsl(var(--shadow-color) / 0.08), inset 0 4px 8px hsl(0 0% 100% / 0.8);
+  --shadow-lg: 0 14px 28px hsl(var(--shadow-color) / 0.16), inset 0 -6px 12px hsl(var(--shadow-color) / 0.08), inset 0 6px 12px hsl(0 0% 100% / 0.8);
+  --shadow-xl: 0 24px 48px hsl(var(--shadow-color) / 0.2), inset 0 -8px 16px hsl(var(--shadow-color) / 0.08), inset 0 8px 16px hsl(0 0% 100% / 0.8);
+}
+:root {
+  --background: oklch(0.965 0.025 var(--brand-h));
+  --foreground: oklch(0.24 0.04 var(--brand-h));
+  --surface: oklch(0.99 0.01 var(--brand-h));
+  --surface-raised: oklch(0.995 0.008 var(--brand-h));
+  --muted: oklch(0.93 0.03 var(--brand-h));
+  --muted-foreground: oklch(0.44 0.04 var(--brand-h));
+  --primary: oklch(0.6 0.17 var(--brand-h));
+  --primary-foreground: oklch(0.16 0.04 var(--brand-h));
+  --secondary: oklch(0.92 0.045 var(--brand-h));
+  --secondary-foreground: oklch(0.27 0.06 var(--brand-h));
+  --accent: oklch(0.9 0.07 var(--brand-h));
+  --accent-foreground: oklch(0.27 0.09 var(--brand-h));
+  --destructive: oklch(0.64 0.19 25);
+  --destructive-foreground: oklch(0.16 0.04 25);
+  --success: oklch(0.7 0.15 150);
+  --success-foreground: oklch(0.16 0.04 150);
+  --warning: oklch(0.84 0.14 85);
+  --warning-foreground: oklch(0.24 0.05 70);
+  --info: oklch(0.7 0.12 235);
+  --info-foreground: oklch(0.16 0.04 235);
+  --border: oklch(0.9 0.025 var(--brand-h));
+  --input: oklch(0.55 0.06 var(--brand-h));
+  --ring: oklch(0.5 0.17 var(--brand-h));
+}
+
+.dark {
+  --background: oklch(0.2 0.035 var(--brand-h));
+  --foreground: oklch(0.95 0.015 var(--brand-h));
+  --surface: oklch(0.25 0.04 var(--brand-h));
+  --surface-raised: oklch(0.29 0.045 var(--brand-h));
+  --muted: oklch(0.28 0.04 var(--brand-h));
+  --muted-foreground: oklch(0.78 0.04 var(--brand-h));
+  --primary: oklch(0.76 0.13 var(--brand-h));
+  --primary-foreground: oklch(0.18 0.04 var(--brand-h));
+  --secondary: oklch(0.31 0.045 var(--brand-h));
+  --secondary-foreground: oklch(0.94 0.02 var(--brand-h));
+  --accent: oklch(0.34 0.06 var(--brand-h));
+  --accent-foreground: oklch(0.93 0.04 var(--brand-h));
+  --destructive: oklch(0.74 0.15 25);
+  --destructive-foreground: oklch(0.17 0.03 25);
+  --success: oklch(0.76 0.13 150);
+  --success-foreground: oklch(0.17 0.03 150);
+  --warning: oklch(0.84 0.13 85);
+  --warning-foreground: oklch(0.2 0.04 70);
+  --info: oklch(0.76 0.11 235);
+  --info-foreground: oklch(0.17 0.03 235);
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(0.64 0.05 var(--brand-h));
+  --ring: oklch(0.76 0.13 var(--brand-h));
+}
+
+/* Clay needs dark text on pastel fills (see the -foreground tokens). Buttons and chips are pills; cards use rounded-2xl. */

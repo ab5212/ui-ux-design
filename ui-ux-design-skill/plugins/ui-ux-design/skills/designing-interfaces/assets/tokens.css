@@ -1,0 +1,203 @@
+/*
+  designing-interfaces — canonical design tokens (Tailwind v4)
+  ------------------------------------------------------------
+  Tier 1  raw values     → :root / .dark            (change these to rebrand)
+  Tier 2  Tailwind map   → @theme inline            (exposes bg-primary, rounded-lg, …)
+  Tier 3  component      → --control-h-*, --dialog-* (sizes components read)
+
+  Without Tailwind: delete the @import, @custom-variant and @theme blocks;
+  the :root/.dark variables work as plain CSS custom properties.
+  Tailwind v3: see references/tokens.md for the tailwind.config mapping.
+*/
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Brand: change the hue (0–360) to rebrand; lightness/chroma are tuned for contrast. */
+  --brand-h: 255;
+
+  /* Surfaces & text */
+  --background: oklch(0.99 0.002 var(--brand-h));
+  --foreground: oklch(0.21 0.015 var(--brand-h));
+  --surface: oklch(1 0 0);                          /* cards, inputs */
+  --surface-raised: oklch(1 0 0);                   /* popovers, menus */
+  --muted: oklch(0.965 0.005 var(--brand-h));       /* subtle fills */
+  --muted-foreground: oklch(0.48 0.015 var(--brand-h));
+
+  /* Actions */
+  --primary: oklch(0.5 0.16 var(--brand-h));
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.945 0.008 var(--brand-h));
+  --secondary-foreground: oklch(0.25 0.015 var(--brand-h));
+  --accent: oklch(0.95 0.025 var(--brand-h));       /* hover/selected tint */
+  --accent-foreground: oklch(0.3 0.08 var(--brand-h));
+
+  /* Status (each has a foreground for text placed on the fill) */
+  --destructive: oklch(0.53 0.2 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.5 0.12 150);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.8 0.15 80);
+  --warning-foreground: oklch(0.25 0.05 60);
+  --info: oklch(0.52 0.13 235);
+  --info-foreground: oklch(0.99 0 0);
+
+  /* Lines */
+  --border: oklch(0.91 0.006 var(--brand-h));       /* decorative dividers */
+  --input: oklch(0.62 0.012 var(--brand-h));        /* control boundaries: needs 3:1 */
+  --ring: oklch(0.5 0.16 var(--brand-h));           /* focus ring: needs 3:1 */
+
+  /* Shape */
+  --radius: 0.5rem; /* = lg (8px). Others derive from it in @theme. */
+
+  /* Elevation: two layers — tight key shadow + soft ambient */
+  --shadow-color: 220 40% 15%;
+  --shadow-xs: 0 1px 2px hsl(var(--shadow-color) / 0.06);
+  --shadow-sm: 0 1px 2px hsl(var(--shadow-color) / 0.06), 0 1px 3px hsl(var(--shadow-color) / 0.1);
+  --shadow-md: 0 2px 4px hsl(var(--shadow-color) / 0.06), 0 4px 8px hsl(var(--shadow-color) / 0.08);
+  --shadow-lg: 0 4px 8px hsl(var(--shadow-color) / 0.06), 0 12px 24px hsl(var(--shadow-color) / 0.12);
+  --shadow-xl: 0 8px 16px hsl(var(--shadow-color) / 0.08), 0 24px 48px hsl(var(--shadow-color) / 0.16);
+
+  /* Component sizes (density modes override these) */
+  --control-h-sm: 2rem;    /* 32 */
+  --control-h-md: 2.5rem;  /* 40 */
+  --control-h-lg: 3rem;    /* 48 */
+  --row-h: 2.5rem;         /* table/list rows */
+  --target-min: 1.5rem;    /* 24px WCAG 2.5.8 floor */
+
+  /* Motion */
+  --duration-instant: 70ms;
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 450ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 1, 1);
+
+  /* Layering */
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-overlay: 1300;
+  --z-modal: 1400;
+  --z-popover: 1500;
+  --z-toast: 1700;
+  --z-tooltip: 1800;
+
+  /* Type */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
+
+  color-scheme: light;
+}
+
+.dark {
+  --background: oklch(0.17 0.012 var(--brand-h));
+  --foreground: oklch(0.95 0.005 var(--brand-h));
+  --surface: oklch(0.205 0.013 var(--brand-h));       /* lighter = higher */
+  --surface-raised: oklch(0.245 0.014 var(--brand-h));
+  --muted: oklch(0.235 0.012 var(--brand-h));
+  --muted-foreground: oklch(0.77 0.012 var(--brand-h));
+
+  --primary: oklch(0.76 0.12 var(--brand-h));          /* lighter, less chroma */
+  --primary-foreground: oklch(0.17 0.02 var(--brand-h));
+  --secondary: oklch(0.27 0.012 var(--brand-h));
+  --secondary-foreground: oklch(0.93 0.005 var(--brand-h));
+  --accent: oklch(0.28 0.03 var(--brand-h));
+  --accent-foreground: oklch(0.9 0.04 var(--brand-h));
+
+  --destructive: oklch(0.73 0.16 25);
+  --destructive-foreground: oklch(0.17 0.02 25);
+  --success: oklch(0.74 0.13 150);
+  --success-foreground: oklch(0.17 0.02 150);
+  --warning: oklch(0.82 0.14 80);
+  --warning-foreground: oklch(0.2 0.04 60);
+  --info: oklch(0.74 0.11 235);
+  --info-foreground: oklch(0.17 0.02 235);
+
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(0.62 0.012 var(--brand-h));
+  --ring: oklch(0.76 0.12 var(--brand-h));
+
+  /* Shadows barely read on dark; surfaces get lighter instead. */
+  --shadow-color: 220 40% 2%;
+
+  color-scheme: dark;
+}
+
+/* Density: change heights and row sizes, never font size below 14px or targets below 24px. */
+[data-density="compact"] { --control-h-sm: 1.75rem; --control-h-md: 2rem; --control-h-lg: 2.5rem; --row-h: 2rem; }
+[data-density="comfortable"] { --control-h-sm: 2.5rem; --control-h-md: 3rem; --control-h-lg: 3.5rem; --row-h: 3rem; }
+
+/* Touch-first devices: raise the floor to 44px automatically. */
+@media (pointer: coarse) {
+  :root { --target-min: 2.75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 1ms; --duration-base: 1ms; --duration-slow: 1ms; --duration-slower: 1ms;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-xs: calc(var(--radius) * 0.25);  /* 2  */
+  --radius-sm: calc(var(--radius) * 0.5);   /* 4  */
+  --radius-md: calc(var(--radius) * 0.75);  /* 6  */
+  --radius-lg: var(--radius);               /* 8  */
+  --radius-xl: calc(var(--radius) * 1.5);   /* 12 */
+  --radius-2xl: calc(var(--radius) * 2);    /* 16 */
+  --radius-3xl: calc(var(--radius) * 3);    /* 24 */
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+
+  --ease-standard: var(--ease-standard);
+  --ease-enter: var(--ease-enter);
+  --ease-exit: var(--ease-exit);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+@layer base {
+  * { border-color: var(--border); }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  @media (forced-colors: active) { :focus-visible { outline-color: Highlight; } }
+}

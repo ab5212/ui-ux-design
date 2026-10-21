@@ -1,0 +1,49 @@
+/* Playground-only additions. Product tokens live in tokens.css. */
+
+/* Radius personality presets (toolbar) */
+[data-radius="sharp"] { --radius: 0.125rem; }
+[data-radius="round"] { --radius: 0.875rem; }
+
+/* Simulated prefers-reduced-motion (toolbar toggle) */
+[data-motion="reduced"] {
+  --duration-fast: 1ms;
+  --duration-base: 1ms;
+  --duration-slow: 1ms;
+  --duration-slower: 1ms;
+}
+[data-motion="reduced"] *, [data-motion="reduced"] *::before, [data-motion="reduced"] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+}
+
+html { scroll-padding-top: 5rem; }
+
+/* Overlay entry/exit, driven by Radix data-state */
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes fade-out { to { opacity: 0; } }
+/* Tailwind v4 centers with the `translate` property, so keyframes only use `transform` (they compose). */
+@keyframes pop-in { from { opacity: 0; transform: translateY(8px) scale(0.96); } }
+@keyframes pop-out { to { opacity: 0; transform: scale(0.98); } }
+@keyframes sheet-in { from { transform: translateY(100%); } }
+@keyframes sheet-out { to { transform: translateY(100%); } }
+@keyframes menu-in { from { opacity: 0; transform: scale(0.96) translateY(-4px); } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+.anim-overlay[data-state="open"] { animation: fade-in var(--duration-base) var(--ease-enter); }
+.anim-overlay[data-state="closed"] { animation: fade-out var(--duration-fast) var(--ease-exit); }
+.anim-dialog[data-state="open"] { animation: pop-in var(--duration-base) var(--ease-enter); }
+.anim-dialog[data-state="closed"] { animation: pop-out var(--duration-fast) var(--ease-exit); }
+.anim-sheet[data-state="open"] { animation: sheet-in var(--duration-slow) var(--ease-enter); }
+.anim-sheet[data-state="closed"] { animation: sheet-out var(--duration-base) var(--ease-exit); }
+.anim-menu[data-state="open"] { animation: menu-in var(--duration-base) var(--ease-enter); transform-origin: var(--radix-dropdown-menu-content-transform-origin); }
+.anim-menu[data-state="closed"] { animation: fade-out var(--duration-fast) var(--ease-exit); }
+.anim-tooltip[data-state="delayed-open"], .anim-tooltip[data-state="instant-open"] { animation: fade-in var(--duration-fast) var(--ease-enter); }
+.anim-toast { animation: toast-in var(--duration-base) var(--ease-enter); }
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--muted) 25%, color-mix(in oklch, var(--muted), var(--foreground) 6%) 50%, var(--muted) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) { .skeleton-shimmer { animation: none; } }

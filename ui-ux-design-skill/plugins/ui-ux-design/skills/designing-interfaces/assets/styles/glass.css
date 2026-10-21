@@ -1,0 +1,97 @@
+/*
+  Style preset: glass
+  Glassmorphism: frosted translucent panels over a soft colored backdrop. Floating toolbars, media, dashboards with imagery, marketing pages. Use for the navigation and control layer, not for dense content.
+
+  How to use: append this file AFTER tokens.css (or merge the values into your own tokens).
+  It redefines every color token for BOTH :root and .dark, because :root and .dark have equal
+  specificity and the later rule wins; a color defined in only one block would leak into the other theme.
+  Check it:  node scripts/check-contrast.mjs assets/tokens.css assets/styles/glass.css
+*/
+:root {
+  --radius: 1rem;
+  --glass-blur: 20px;
+  --shadow-xs: 0 1px 2px hsl(var(--shadow-color) / 0.06);
+  --shadow-sm: 0 2px 8px hsl(var(--shadow-color) / 0.08);
+  --shadow-md: 0 8px 24px hsl(var(--shadow-color) / 0.10);
+  --shadow-lg: 0 16px 40px hsl(var(--shadow-color) / 0.14);
+  --shadow-xl: 0 28px 64px hsl(var(--shadow-color) / 0.2);
+}
+:root {
+  --background: oklch(0.95 0.04 var(--brand-h));
+  --foreground: oklch(0.2 0.02 var(--brand-h));
+  --surface: oklch(1 0 0 / 0.6);
+  --surface-raised: oklch(1 0 0 / 0.8);
+  --muted: oklch(1 0 0 / 0.45);
+  --muted-foreground: oklch(0.4 0.02 var(--brand-h));
+  --primary: oklch(0.5 0.17 var(--brand-h));
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(1 0 0 / 0.5);
+  --secondary-foreground: oklch(0.22 0.02 var(--brand-h));
+  --accent: oklch(1 0 0 / 0.7);
+  --accent-foreground: oklch(0.3 0.1 var(--brand-h));
+  --destructive: oklch(0.52 0.2 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.48 0.12 150);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.8 0.15 80);
+  --warning-foreground: oklch(0.25 0.05 60);
+  --info: oklch(0.5 0.13 235);
+  --info-foreground: oklch(0.99 0 0);
+  --border: oklch(1 0 0 / 0.6);
+  --input: oklch(0.45 0.03 var(--brand-h));
+  --ring: oklch(0.5 0.17 var(--brand-h));
+}
+
+.dark {
+  --background: oklch(0.2 0.05 var(--brand-h));
+  --foreground: oklch(0.96 0.005 var(--brand-h));
+  --surface: oklch(0.3 0.03 var(--brand-h) / 0.5);
+  --surface-raised: oklch(0.34 0.03 var(--brand-h) / 0.72);
+  --muted: oklch(1 0 0 / 0.08);
+  --muted-foreground: oklch(0.8 0.015 var(--brand-h));
+  --primary: oklch(0.78 0.12 var(--brand-h));
+  --primary-foreground: oklch(0.17 0.02 var(--brand-h));
+  --secondary: oklch(1 0 0 / 0.1);
+  --secondary-foreground: oklch(0.95 0.005 var(--brand-h));
+  --accent: oklch(1 0 0 / 0.15);
+  --accent-foreground: oklch(0.93 0.03 var(--brand-h));
+  --destructive: oklch(0.75 0.15 25);
+  --destructive-foreground: oklch(0.17 0.02 25);
+  --success: oklch(0.76 0.13 150);
+  --success-foreground: oklch(0.17 0.02 150);
+  --warning: oklch(0.84 0.14 80);
+  --warning-foreground: oklch(0.2 0.04 60);
+  --info: oklch(0.76 0.11 235);
+  --info-foreground: oklch(0.17 0.02 235);
+  --border: oklch(1 0 0 / 0.16);
+  --input: oklch(0.72 0.03 var(--brand-h));
+  --ring: oklch(0.78 0.12 var(--brand-h));
+}
+
+/* The page needs something to blur. Without a colorful backdrop, glass is just gray cards that cost more. */
+body {
+  background-image:
+    radial-gradient(60rem 40rem at 10% -10%, oklch(0.9 0.09 var(--brand-h) / 0.7), transparent 60%),
+    radial-gradient(50rem 36rem at 100% 0%, oklch(0.92 0.08 calc(var(--brand-h) + 70) / 0.6), transparent 55%);
+  background-attachment: fixed;
+}
+.dark body {
+  background-image:
+    radial-gradient(60rem 40rem at 10% -10%, oklch(0.4 0.12 var(--brand-h) / 0.6), transparent 60%),
+    radial-gradient(50rem 36rem at 100% 0%, oklch(0.36 0.1 calc(var(--brand-h) + 70) / 0.5), transparent 55%);
+}
+/* Glass treatment for panels, menus and dialogs. Apply to the control layer, never to body text blocks. */
+.glass, .bg-surface-raised {
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+}
+/* Solid fallbacks: no blur support, user asks for less transparency, or higher contrast. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root { --surface: oklch(1 0 0); --surface-raised: oklch(1 0 0); }
+  .dark { --surface: oklch(0.26 0.02 var(--brand-h)); --surface-raised: oklch(0.3 0.02 var(--brand-h)); }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root { --surface: oklch(1 0 0); --surface-raised: oklch(1 0 0); --border: oklch(0.7 0.01 var(--brand-h)); }
+  .dark { --surface: oklch(0.26 0.02 var(--brand-h)); --surface-raised: oklch(0.3 0.02 var(--brand-h)); --border: oklch(0.6 0.01 var(--brand-h)); }
+  .glass, .bg-surface-raised { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

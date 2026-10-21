@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Invoices · Plain HTML + CSS example</title>
+  <link rel="stylesheet" href="../tokens.plain.css">
+  <link rel="stylesheet" href="components.css">
+  <script>
+    /* Apply the saved or system theme before first paint to avoid a flash. */
+    try {
+      const t = new URLSearchParams(location.search).get("theme") || localStorage.getItem("theme");
+      if (t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)) document.documentElement.classList.add("dark");
+    } catch (e) {}
+  </script>
+  <style>
+    /* Page-specific layout only. Everything visual comes from tokens and components.css. */
+    main { padding-block: 1.5rem 4rem; }
+    .layout { display: grid; gap: 1.5rem; }
+    @media (min-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr) 22rem; align-items: start; } }
+    .page-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.875rem; letter-spacing: -0.015em; }
+    h2 { font-size: 1.125rem; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <strong>Acme Billing</strong>
+      <nav aria-label="Main"><ul class="nav">
+        <li><a href="#">Overview</a></li>
+        <li><a href="#" aria-current="page">Invoices</a></li>
+        <li><a href="#">Customers</a></li>
+      </ul></nav>
+      <button class="btn btn-ghost btn-sm" type="button" id="theme" style="margin-inline-start:auto">Toggle theme</button>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="page-head">
+      <div class="stack" style="--stack:.25rem">
+        <h1>Invoices</h1>
+        <p class="text-muted">4 invoices this month, 1 overdue.</p>
+      </div>
+      <button class="btn" type="button" id="open-new">New invoice</button>
+    </div>
+
+    <div class="layout">
+      <section class="card stack" aria-labelledby="list-title">
+        <h2 id="list-title">Recent invoices</h2>
+        <div class="alert alert-danger" role="status">
+          <div><strong>Payment overdue</strong>INV-2043 from Oakline Logistics is 14 days past due.</div>
+        </div>
+        <div class="table-wrap" role="region" aria-label="Invoices" tabindex="0">
+          <table class="table">
+            <caption class="sr-only">Invoices this month</caption>
+            <thead><tr><th scope="col">Invoice</th><th scope="col">Customer</th><th scope="col">Status</th><th scope="col" class="num">Amount</th></tr></thead>
+            <tbody>
+              <tr><td>INV-2041</td><td>Northwind Traders</td><td><span class="badge badge-success">Paid</span></td><td class="num">$1,204.00</td></tr>
+              <tr><td>INV-2042</td><td>Blue Heron Studio</td><td><span class="badge badge-info">Pending</span></td><td class="num">$88.50</td></tr>
+              <tr><td>INV-2043</td><td>Oakline Logistics</td><td><span class="badge badge-danger">Overdue</span></td><td class="num">$3,420.75</td></tr>
+              <tr><td>INV-2044</td><td>Juniper &amp; Co.</td><td><span class="badge badge-success">Paid</span></td><td class="num">$349.99</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <form class="card stack" aria-labelledby="form-title" novalidate>
+        <h2 id="form-title">Send a reminder</h2>
+        <div class="field">
+          <label class="label" for="to">Customer email</label>
+          <input class="input" id="to" type="email" autocomplete="email" inputmode="email" value="billing@oakline" aria-invalid="true" aria-describedby="to-err">
+          <p class="error" id="to-err">Enter an email address like name@example.com</p>
+        </div>
+        <div class="field">
+          <label class="label" for="msg">Message <span class="text-muted">(optional)</span></label>
+          <textarea class="textarea" id="msg" rows="3" aria-describedby="msg-hint"></textarea>
+          <p class="hint" id="msg-hint">Included under the invoice summary.</p>
+        </div>
+        <label class="check"><input type="checkbox" checked> Attach a PDF copy</label>
+        <div class="cluster" style="justify-content:flex-end">
+          <button class="btn btn-ghost" type="button">Cancel</button>
+          <button class="btn" type="submit">Send reminder</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <dialog class="dialog" id="new" aria-labelledby="new-title">
+    <form method="dialog" class="dialog-body">
+      <h2 id="new-title">New invoice</h2>
+      <div class="field"><label class="label" for="cust">Customer</label><input class="input" id="cust" autocomplete="organization"></div>
+      <div class="dialog-footer">
+        <button class="btn btn-ghost" value="cancel">Cancel</button>
+        <button class="btn" value="create">Create invoice</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    const dlg = document.getElementById("new");
+    document.getElementById("open-new").addEventListener("click", () => dlg.showModal());
+    document.getElementById("theme").addEventListener("click", () => {
+      const dark = document.documentElement.classList.toggle("dark");
+      try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
+    });
+  </script>
+</body>
+</html>
