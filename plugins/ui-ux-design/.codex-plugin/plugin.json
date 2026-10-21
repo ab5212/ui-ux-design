@@ -1,6 +1,6 @@
 {
   "name": "ui-ux-design",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Expert UI/UX rules for any web front-end: tokens, typography, color, responsive layouts, component specs, WCAG 2.2 AA accessibility, screenshot-to-code, code audits and a localhost style playground. Asks before building or changing anything.",
   "author": { "name": "ab5212" },
   "homepage": "https://github.com/ab5212/ui-ux-design",

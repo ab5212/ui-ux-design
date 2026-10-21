@@ -9,7 +9,9 @@ import { Section } from "@/gallery/Section";
 import { SaveBar, Toolbar } from "@/gallery/Toolbar";
 import { AppPreview } from "@/gallery/AppPreview";
 import { ElementPanel } from "@/gallery/ElementPanel";
-import { useEdits, type Selection } from "@/lib/edits";
+import { LayersPanel } from "@/gallery/LayersPanel";
+import { InsertPanel } from "@/gallery/InsertPanel";
+import { useEdits, useOpsState, type Selection, type TreeNode } from "@/lib/edits";
 import { ResponsivePreview } from "@/gallery/ResponsivePreview";
 import { ColorFoundation } from "@/gallery/foundations/Color";
 import { TypeFoundation } from "@/gallery/foundations/Type";
@@ -36,7 +38,9 @@ export default function App() {
   const { edits, set: setEdit, clear: clearEdits } = useEdits();
   const [editMode, setEditMode] = useState(false);
   const [selection, setSelection] = useState<Selection | null>(null);
-  const [panel, setPanel] = useState<"customize" | "element">("customize");
+  const [panel, setPanel] = useState<"customize" | "element" | "layers" | "insert">("customize");
+  const [tree, setTree] = useState<TreeNode[]>([]);
+  const [opsState, setOpsState] = useOpsState();
 
   useEffect(() => {
     const ids = SECTIONS.flatMap((g) => g.items.map(([id]) => id as string));
@@ -99,7 +103,9 @@ export default function App() {
             ))}
           </nav>}
 
-          {view === "app" ? <AppPreview settings={settings} edits={edits} editMode={editMode} setEditMode={(on) => { setEditMode(on); setPanel(on ? "element" : "customize"); if (!on) setSelection(null); }} onSelect={(sel) => { setSelection(sel); if (sel) setPanel("element"); }} /> : <main id="main" className="min-w-0 flex-1 pb-24 pt-6">
+          {view === "app" ? <AppPreview settings={settings} edits={edits} editMode={editMode} setEditMode={(on) => { setEditMode(on); setPanel(on ? "element" : "customize"); if (!on) setSelection(null); }} onSelect={(sel) => { setSelection(sel); if (sel && panel === "customize") setPanel("element"); }}
+          onTree={setTree} onOps={setOpsState} ops={opsState}
+          onStyle={(selector, props) => Object.entries(props).forEach(([k, v]) => setEdit(selector, k, v))} /> : <main id="main" className="min-w-0 flex-1 pb-24 pt-6">
             <div className="mb-6 lg:hidden">
               <label htmlFor="jump" className="sr-only">Jump to section</label>
               <select id="jump" className="h-10 w-full rounded-md border border-input bg-surface px-3 text-base"
@@ -156,14 +162,16 @@ export default function App() {
           <aside aria-label="Customize" className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-72 shrink-0 overflow-y-auto border-s bg-surface px-5 pt-6 xl:block">
             {view === "app" ? (
               <div role="tablist" aria-label="Panel" className="mb-5 inline-flex gap-1 rounded-lg bg-muted p-1">
-                {([["customize", "Customize"], ["element", "Element"]] as const).map(([k, label]) => (
+                {([["customize", "Customize"], ["element", "Element"], ["layers", "Layers"], ["insert", "Insert"]] as const).map(([k, label]) => (
                   <button key={k} type="button" role="tab" aria-selected={panel === k} onClick={() => setPanel(k)}
-                    className={`h-8 rounded-md px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring ${panel === k ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{label}</button>
+                    className={`h-8 rounded-md px-2 text-[13px] font-medium focus-visible:outline-2 focus-visible:outline-ring ${panel === k ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{label}</button>
                 ))}
               </div>
             ) : <h2 className="mb-5 text-base font-semibold">Customize</h2>}
             {view === "app" && panel === "element"
               ? <ElementPanel selection={selection} edits={edits} set={setEdit} clear={clearEdits} />
+              : view === "app" && panel === "layers" ? <LayersPanel tree={tree} selected={selection?.id ?? null} />
+              : view === "app" && panel === "insert" ? <InsertPanel selection={selection} />
               : <Toolbar settings={settings} update={update} footer={false} />}
             <SaveBar settings={settings} />
           </aside>

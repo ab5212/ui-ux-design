@@ -79,6 +79,7 @@ Read only the files the task needs. Each file starts with beginner defaults, the
 | Set up or audit tokens, Tailwind theme, CSS variables, theming, dark mode wiring | `references/tokens.md` |
 | Fonts, type scale, line height, line length, numbers | `references/typography.md` |
 | Icons and font loading (Google Fonts, Material Symbols) | `references/icons-fonts.md` |
+| The user saved changes from the playground (`playground-changes.json`, `playground-overrides.css`, `playground-layout.json`) | `references/playground-changes.md` |
 | Palette, semantic colors, contrast, dark mode, states | `references/color.md` |
 | Spacing scale, grids, density, alignment | `references/spacing-layout.md` |
 | Mobile, tablet, laptop, desktop, ultrawide; navigation per size; touch vs mouse | `references/responsive.md` |

@@ -2,6 +2,11 @@
 
 Bump `version` in **both** plugin manifests for every release; users only receive updates when it changes.
 
+## 1.5.0
+- Playground **Layers**, **Insert** and arrange tools for the running app: layers tree with drag to reorder or move inside, canvas drag with a drop line, resize handles, move up/down, duplicate, delete, group and ungroup, in-place text editing, multi-select, container layout controls, undo and redo, and replay after reload. An Insert library (text, button, icon picker, image, badge, avatar, row, column, card, form fields, tabs, breadcrumb, kebab menu with editable items, KPI card, table, lists and 11 chart types).
+- Structural changes are saved as an ordered change list in `playground-changes.json`; new `references/playground-changes.md` tells the skill how to apply them to source after approval.
+- Dashboard builder: 16 widget types (line, area, bar, stacked, scatter, pie, donut, horizontal bars, funnel, radar, heatmap, gauge, KPI, table, activity, progress) with editable titles and chart data, saved in `playground-layout.json`.
+
 ## 1.4.0
 - Playground **Edit elements** (Figma-style): in Your app, click any element of the running app to select it and edit its text color, size, weight, alignment, background, opacity, padding, radius, border, shadow and spacing above and below, live. Apply to one element or all similar ones, select the parent, and Save to code writes `playground-overrides.css` and `playground-changes.json`. Your app accepts localhost addresses only and needs no change to the app: the playground opens it through a loopback proxy that adds the bridge script (HTML only; websockets for hot reload pass through).
 - Playground fixes: the nested-radius demo had uneven padding when a caption wrapped; the Save button now stays visible in the Element tab.

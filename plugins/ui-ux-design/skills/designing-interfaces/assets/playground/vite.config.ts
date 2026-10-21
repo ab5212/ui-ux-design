@@ -86,7 +86,7 @@ function saveTokens(): Plugin {
         req.on("data", (c) => (body += c));
         req.on("end", () => {
           try {
-            const { preset, vars, colors, dashboard, edits } = JSON.parse(body) as { preset: string; vars: Record<string, string>; colors: Record<string, { light?: string; dark?: string }>; dashboard: { cols: number; kpiStyle: string; widgets: { type: string; span: number }[] } | null; edits?: Record<string, Record<string, string>> };
+            const { preset, vars, colors, dashboard, edits, ops } = JSON.parse(body) as { preset: string; vars: Record<string, string>; colors: Record<string, { light?: string; dark?: string }>; dashboard: { cols: number; kpiStyle: string; widgets: { type: string; span: number }[] } | null; edits?: Record<string, Record<string, string>>; ops?: Record<string, unknown>[] };
             const lines = Object.entries(vars).map(([k, v]) => {
               if (!/^--[a-z0-9-]+$/.test(k) || !/^[\w\s.,%()"'-]+$/.test(String(v))) throw new Error(`bad value for ${k}`);
               return `  ${k}: ${v};`;
@@ -106,17 +106,27 @@ function saveTokens(): Plugin {
             writeFileSync(file, next);
             // The dashboard layout goes beside the tokens file for the agent (or you) to build from.
             if (dashboard) {
+              const TYPES = ["kpi", "line", "area", "bar", "hbar", "stacked", "pie", "donut", "gauge", "radar", "scatter", "heatmap", "funnel", "table", "activity", "progress"];
+              const str = (v: unknown) => (typeof v === "string" && v.length <= 80 ? v : undefined);
               const ok = [2, 3, 4, 6].includes(dashboard.cols) && ["plain", "trend", "sparkline", "icon"].includes(dashboard.kpiStyle)
-                && Array.isArray(dashboard.widgets) && dashboard.widgets.every((w) => ["kpi", "line", "bar", "table", "activity", "progress"].includes(w.type) && [1, 2, 3, 4].includes(w.span));
+                && Array.isArray(dashboard.widgets) && dashboard.widgets.length <= 60 && dashboard.widgets.every((w: { type: string; span: number }) => TYPES.includes(w.type) && [1, 2, 3, 4].includes(w.span));
               if (!ok) throw new Error("bad dashboard");
-              const widgets = dashboard.widgets.map(({ type, span }) => ({ type, span }));
+              const widgets = (dashboard.widgets as { type: string; span: number; title?: unknown; value?: unknown; delta?: unknown; data?: { labels?: unknown[]; values?: unknown[] } }[]).map((w) => {
+                const out: Record<string, unknown> = { type: w.type, span: w.span };
+                if (str(w.title)) out.title = w.title; if (str(w.value)) out.value = w.value; if (str(w.delta)) out.delta = w.delta;
+                if (w.data && Array.isArray(w.data.labels) && Array.isArray(w.data.values) && w.data.labels.length <= 24)
+                  out.data = { labels: w.data.labels.map((l) => String(l).slice(0, 40)), values: w.data.values.map((v) => (Number.isFinite(Number(v)) ? Number(v) : 0)) };
+                return out;
+              });
               writeFileSync(resolve(dirname(file), "playground-layout.json"), JSON.stringify({ columns: dashboard.cols, kpiStyle: dashboard.kpiStyle, widgets }, null, 2) + "\n");
             }
             // Element edits from the "Your app" view become a stylesheet the app imports, plus a change list.
             const files: string[] = [];
             const entries = Object.entries(edits ?? {}).filter(([, props]) => Object.keys(props).length);
-            if (entries.length) {
-              const OK_PROP = new Set(["color", "background-color", "font-size", "font-weight", "text-align", "padding", "border-radius", "border-width", "border-style", "border-color", "box-shadow", "margin-top", "margin-bottom", "opacity"]);
+            const OPS = ["move", "insert", "delete", "duplicate", "group", "ungroup", "text", "menu-items"];
+            const opList = Array.isArray(ops) ? ops.filter((o) => OPS.includes(String(o.op)) && JSON.stringify(o).length <= 20000) : [];
+            if (opList.length || entries.length) {
+              const OK_PROP = new Set(["color", "background-color", "font-size", "font-weight", "text-align", "padding", "border-radius", "border-width", "border-style", "border-color", "box-shadow", "margin-top", "margin-bottom", "opacity", "width", "height", "display", "flex-direction", "gap", "align-items", "justify-content", "flex-wrap"]);
               const rules = entries.map(([sel, props]) => {
                 if (!/^[\w\s.#>:()\-\[\]="'*,+~\\]+$/.test(sel)) throw new Error("bad selector");
                 const decls = Object.entries(props).map(([k, v]) => {
@@ -125,9 +135,11 @@ function saveTokens(): Plugin {
                 });
                 return `${sel} {\n${decls.join("\n")}\n}`;
               });
-              writeFileSync(resolve(dirname(file), "playground-overrides.css"), `/* Written by the playground (Your app > Edit elements). Import once: import "./playground-overrides.css" */\n${rules.join("\n")}\n`);
-              writeFileSync(resolve(dirname(file), "playground-changes.json"), JSON.stringify({ edits: entries.map(([selector, styles]) => ({ selector, styles })) }, null, 2) + "\n");
-              files.push("playground-overrides.css", "playground-changes.json");
+              if (entries.length) writeFileSync(resolve(dirname(file), "playground-overrides.css"), `/* Written by the playground (Your app > Edit elements). Import once: import "./playground-overrides.css" */\n${rules.join("\n")}\n`);
+              // ops are applied in order; each names its element by selector, with a snapshot (ref) to find it in source.
+              writeFileSync(resolve(dirname(file), "playground-changes.json"), JSON.stringify({ edits: entries.map(([selector, styles]) => ({ selector, styles })), ops: opList }, null, 2) + "\n");
+              if (entries.length) files.push("playground-overrides.css");
+              files.push("playground-changes.json");
             }
             res.setHeader("Content-Type", "application/json");
             res.end(JSON.stringify({ file, files }));

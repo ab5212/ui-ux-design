@@ -3,9 +3,10 @@ import { Demo } from "../Section";
 import { Button } from "@/components/ui/Button";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { cn } from "@/lib/cn";
+import { CHARTS, SAMPLE, SAMPLE_PARTS, type Data } from "@/lib/charts";
 
-export type WidgetType = "kpi" | "line" | "bar" | "table" | "activity" | "progress";
-export interface Widget { id: string; type: WidgetType; span: 1 | 2 | 3 | 4 }
+export type WidgetType = "kpi" | "line" | "area" | "bar" | "hbar" | "stacked" | "pie" | "donut" | "gauge" | "radar" | "scatter" | "heatmap" | "funnel" | "table" | "activity" | "progress";
+export interface Widget { id: string; type: WidgetType; span: 1 | 2 | 3 | 4; title?: string; value?: string; delta?: string; data?: Data }
 export type KpiStyle = "plain" | "trend" | "sparkline" | "icon";
 export interface Dash { cols: 2 | 3 | 4 | 6; kpiStyle: KpiStyle; widgets: Widget[] }
 
@@ -24,7 +25,19 @@ function load(): Dash {
   try { return { ...DEFAULT, ...JSON.parse(localStorage.getItem(DASH_KEY) || "{}") }; } catch { return DEFAULT; }
 }
 
-const LABEL: Record<WidgetType, string> = { kpi: "KPI card", line: "Line chart", bar: "Bar chart", table: "Table", activity: "Activity", progress: "Progress" };
+const LABEL: Record<WidgetType, string> = { kpi: "KPI card", line: "Line chart", area: "Area chart", bar: "Bar chart", hbar: "Horizontal bars", stacked: "Stacked bars", pie: "Pie chart", donut: "Donut chart", gauge: "Gauge", radar: "Radar chart", scatter: "Scatter plot", heatmap: "Heatmap", funnel: "Funnel", table: "Table", activity: "Activity", progress: "Progress" };
+const GROUPS: [string, WidgetType[]][] = [
+  ["Numbers", ["kpi", "gauge"]],
+  ["Trends", ["line", "area", "bar", "stacked", "scatter"]],
+  ["Share", ["pie", "donut", "hbar", "funnel", "radar", "heatmap"]],
+  ["Lists", ["table", "activity", "progress"]],
+];
+const TITLE: Partial<Record<WidgetType, string>> = { line: "Revenue", area: "Visitors", bar: "Orders", hbar: "By channel", stacked: "Plans", pie: "Traffic sources", donut: "Share", gauge: "Goal", radar: "Skills", scatter: "Correlation", heatmap: "Activity by day", funnel: "Conversion" };
+const DATA: Partial<Record<WidgetType, Data>> = {
+  hbar: SAMPLE_PARTS, pie: SAMPLE_PARTS, donut: SAMPLE_PARTS, gauge: { labels: ["of target"], values: [72] },
+  radar: { labels: ["Speed", "Power", "Skill", "Range", "Focus"], values: [8, 6, 9, 5, 7] }, funnel: { labels: ["Visits", "Signups", "Trials", "Paid"], values: [1000, 620, 310, 140] },
+};
+const dataOf = (w: Widget): Data => w.data ?? DATA[w.type] ?? SAMPLE;
 const KPIS = [
   { label: "Revenue", value: "$48.2k", delta: "+12%", up: true, icon: "payments" },
   { label: "Active users", value: "1,204", delta: "+4.1%", up: true, icon: "group" },
@@ -45,7 +58,8 @@ function Icon({ name, className }: { name: string; className?: string }) {
 
 function WidgetBody({ w, index, kpiStyle }: { w: Widget; index: number; kpiStyle: KpiStyle }) {
   if (w.type === "kpi") {
-    const k = KPIS[index % KPIS.length];
+    const base = KPIS[index % KPIS.length];
+    const k = { ...base, label: w.title ?? base.label, value: w.value ?? base.value, delta: w.delta ?? base.delta };
     return (
       <div className="flex h-full items-start gap-3">
         {kpiStyle === "icon" && <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-accent text-accent-foreground"><Icon name={k.icon} className="text-xl" /></span>}
@@ -62,15 +76,7 @@ function WidgetBody({ w, index, kpiStyle }: { w: Widget; index: number; kpiStyle
       </div>
     );
   }
-  if (w.type === "line") return (<><p className="text-sm font-medium">Revenue, last 12 months</p><Spark data={SERIES} className="mt-3 h-32" /></>);
-  if (w.type === "bar") return (
-    <>
-      <p className="text-sm font-medium">Orders by day</p>
-      <div className="mt-3 flex h-32 items-end gap-1.5" aria-hidden>
-        {[40, 62, 48, 80, 66, 90, 54].map((h, i) => <div key={i} className="flex-1 rounded-t-sm bg-primary" style={{ height: `${h}%` }} />)}
-      </div>
-    </>
-  );
+  if (w.type in CHARTS) return (<><p className="text-sm font-medium">{w.title ?? TITLE[w.type] ?? LABEL[w.type]}</p><div className="mt-2 text-foreground" dangerouslySetInnerHTML={{ __html: CHARTS[w.type](dataOf(w)) }} /></>);
   if (w.type === "table") return (
     <>
       <p className="text-sm font-medium">Recent invoices</p>
@@ -118,10 +124,52 @@ function Seg<T extends string | number>({ label, value, options, onChange }: { l
   );
 }
 
+/** Title and data of the selected widget. Charts redraw as you type. */
+function WidgetEditor({ w, onChange, onClose }: { w: Widget; onChange: (p: Partial<Widget>) => void; onClose: () => void }) {
+  const isChart = w.type in CHARTS;
+  const d = dataOf(w);
+  const setRow = (i: number, key: "labels" | "values", v: string) => {
+    const labels = [...d.labels], values = [...d.values];
+    if (key === "labels") labels[i] = v; else values[i] = Number(v) || 0;
+    onChange({ data: { ...d, labels, values } });
+  };
+  const input = "h-9 min-w-0 rounded-md border border-input bg-surface px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring";
+  return (
+    <div className="mt-4 grid gap-4 rounded-xl border bg-muted/40 p-4" role="region" aria-label={`${LABEL[w.type]} settings`}>
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-semibold">{LABEL[w.type]} settings</h4>
+        <button type="button" onClick={onClose} aria-label="Close settings" className="icon material-symbols-rounded text-muted-foreground hover:text-foreground">close</button>
+      </div>
+      <label className="grid gap-1.5 text-sm"><span className="text-xs font-medium text-muted-foreground">Title</span>
+        <input className={input} value={w.title ?? ""} placeholder={TITLE[w.type] ?? LABEL[w.type]} onChange={(e) => onChange({ title: e.target.value })} /></label>
+      {w.type === "kpi" && (
+        <div className="grid grid-cols-2 gap-3">
+          <label className="grid gap-1.5 text-sm"><span className="text-xs font-medium text-muted-foreground">Value</span><input className={input} value={w.value ?? ""} placeholder="$48.2k" onChange={(e) => onChange({ value: e.target.value })} /></label>
+          <label className="grid gap-1.5 text-sm"><span className="text-xs font-medium text-muted-foreground">Change</span><input className={input} value={w.delta ?? ""} placeholder="+12%" onChange={(e) => onChange({ delta: e.target.value })} /></label>
+        </div>
+      )}
+      {isChart && (
+        <div className="grid gap-2">
+          <span className="text-xs font-medium text-muted-foreground">Data</span>
+          {d.labels.map((l, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input aria-label={`Label ${i + 1}`} className={cn(input, "flex-1")} value={l} onChange={(e) => setRow(i, "labels", e.target.value)} />
+              <input aria-label={`Value ${i + 1}`} type="number" className={cn(input, "w-24 tabular-nums")} value={d.values[i] ?? 0} onChange={(e) => setRow(i, "values", e.target.value)} />
+              <button type="button" aria-label={`Remove row ${i + 1}`} disabled={d.labels.length <= 1} onClick={() => onChange({ data: { ...d, labels: d.labels.filter((_, j) => j !== i), values: d.values.filter((_, j) => j !== i) } })} className="icon material-symbols-rounded text-muted-foreground hover:text-destructive disabled:opacity-30">close</button>
+            </div>
+          ))}
+          {d.labels.length < 12 && <button type="button" onClick={() => onChange({ data: { ...d, labels: [...d.labels, `Item ${d.labels.length + 1}`], values: [...d.values, 10] } })} className="justify-self-start text-sm font-medium text-primary hover:underline">+ Add row</button>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** Lay out a dashboard: grid size, KPI card style, which widgets, their order and width. Saved with "Save to code" as playground-layout.json. */
 export function DashboardBuilder() {
   const [dash, setDash] = useState<Dash>(load);
   const [dragFrom, setDragFrom] = useState<number | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
   const narrow = useMediaQuery("(max-width: 639px)");
   useEffect(() => { localStorage.setItem(DASH_KEY, JSON.stringify(dash)); }, [dash]);
 
@@ -143,11 +191,16 @@ export function DashboardBuilder() {
             options={[{ value: "plain", label: "Number" }, { value: "trend", label: "Trend" }, { value: "sparkline", label: "Sparkline" }, { value: "icon", label: "Icon" }]} />
           <div className="grid gap-1.5">
             <span className="text-xs font-medium text-muted-foreground">Add widget</span>
-            <div className="flex flex-wrap gap-1.5">
-              {(Object.keys(LABEL) as WidgetType[]).map((t) => (
-                <Button key={t} variant="outline" size="sm" onClick={() => set({ widgets: [...dash.widgets, { id: uid(), type: t, span: t === "kpi" ? 1 : 2 }] })}>
-                  <Icon name="add" /> {LABEL[t]}
-                </Button>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+              {GROUPS.map(([g, types]) => (
+                <div key={g} className="flex flex-wrap items-center gap-1.5" role="group" aria-label={g}>
+                  <span className="text-xs text-muted-foreground">{g}</span>
+                  {types.map((t) => (
+                    <Button key={t} variant="outline" size="sm" onClick={() => { const w: Widget = { id: uid(), type: t, span: t === "kpi" || t === "gauge" || t === "progress" || t === "activity" ? 1 : 2 }; set({ widgets: [...dash.widgets, w] }); setEditing(w.id); }}>
+                      <Icon name="add" /> {LABEL[t]}
+                    </Button>
+                  ))}
+                </div>
               ))}
             </div>
           </div>
@@ -160,8 +213,9 @@ export function DashboardBuilder() {
               <article key={w.id} draggable onDragStart={() => setDragFrom(i)} onDragEnd={() => setDragFrom(null)}
                 onDragOver={(e) => e.preventDefault()} onDrop={() => { if (dragFrom !== null) move(dragFrom, i); setDragFrom(null); }}
                 style={{ gridColumn: `span ${Math.min(w.span, cols)}` }}
-                className={cn("group relative min-w-0 rounded-xl border bg-surface p-4 shadow-sm transition-opacity", dragFrom === i && "opacity-40")}>
-                <div className="absolute end-2 top-2 flex items-center gap-0.5 rounded-md bg-surface/90 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+                onClick={() => setEditing(editing === w.id ? null : w.id)}
+                className={cn("group relative min-w-0 cursor-pointer rounded-xl border bg-surface p-4 shadow-sm transition-opacity", dragFrom === i && "opacity-40", editing === w.id && "ring-2 ring-primary")}>
+                <div onClick={(e) => e.stopPropagation()} className="absolute end-2 top-2 z-10 flex items-center gap-0.5 rounded-md bg-surface/90 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
                   <span aria-hidden className="icon material-symbols-rounded cursor-grab text-base text-muted-foreground">drag_indicator</span>
                   <button type="button" aria-label={`Move ${LABEL[w.type]} earlier`} onClick={() => move(i, i - 1)} className="icon material-symbols-rounded text-base text-muted-foreground hover:text-foreground">arrow_back</button>
                   <button type="button" aria-label={`Move ${LABEL[w.type]} later`} onClick={() => move(i, i + 1)} className="icon material-symbols-rounded text-base text-muted-foreground hover:text-foreground">arrow_forward</button>
@@ -174,6 +228,9 @@ export function DashboardBuilder() {
             );
           })}
         </div>
+        {editing && dash.widgets.find((w) => w.id === editing) && (
+          <WidgetEditor w={dash.widgets.find((w) => w.id === editing)!} onChange={(p) => patch(editing, p)} onClose={() => setEditing(null)} />
+        )}
         {dash.widgets.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">No widgets yet. Add one above.</p>}
       </Demo>
     </>

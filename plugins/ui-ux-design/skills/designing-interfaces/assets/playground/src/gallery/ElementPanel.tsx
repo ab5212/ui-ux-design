@@ -1,7 +1,8 @@
 import { toHex } from "@/lib/contrast";
-import type { Edits, Selection } from "@/lib/edits";
+import { cmd, type Edits, type Selection } from "@/lib/edits";
+import { ICONS } from "@/lib/library";
 import { cn } from "@/lib/cn";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const px = (v: string) => Math.round(parseFloat(v) || 0);
 const SHADOWS = { none: "none", soft: "0 1px 3px rgb(0 0 0 / 0.15)", medium: "0 4px 12px rgb(0 0 0 / 0.18)", strong: "0 12px 28px rgb(0 0 0 / 0.25)" } as const;
@@ -34,6 +35,52 @@ function Seg<T extends string>({ label, value, options, onChange }: { label: str
     </Row>
   );
 }
+function Act({ icon, label, onClick, danger, disabled }: { icon: string; label: string; onClick: () => void; danger?: boolean; disabled?: boolean }) {
+  return (
+    <button type="button" title={label} aria-label={label} disabled={disabled} onClick={onClick}
+      className={cn("grid size-9 place-items-center rounded-md border bg-surface hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40", danger && "hover:text-destructive")}>
+      <span aria-hidden className="icon material-symbols-rounded text-xl">{icon}</span>
+    </button>
+  );
+}
+
+/** Editable list of kebab-menu items: label, icon, add, remove, reorder. */
+function ItemsEditor({ sel }: { sel: Selection }) {
+  const [items, setItems] = useState(sel.items ?? []);
+  useEffect(() => setItems(sel.items ?? []), [sel.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const push = (next: { label: string; icon: string }[]) => { setItems(next); cmd({ cmd: "items", id: sel.id, items: next.filter((i) => i.label.trim()) }); };
+  return (
+    <Group title="Menu items">
+      <ul className="grid gap-2">
+        {items.map((it, i) => (
+          <li key={i} className="flex items-center gap-1.5">
+            <select aria-label="Icon" value={it.icon} onChange={(e) => push(items.map((x, j) => (j === i ? { ...x, icon: e.target.value } : x)))} className="h-8 w-24 rounded-md border border-input bg-surface px-1 text-xs">
+              <option value="">No icon</option>{ICONS.map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <input aria-label="Label" value={it.label} onChange={(e) => setItems(items.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))}
+              onBlur={() => push(items)} className="h-8 min-w-0 flex-1 rounded-md border border-input bg-surface px-2 text-sm" />
+            <Act icon="arrow_upward" label="Move item up" disabled={i === 0} onClick={() => push(items.map((_, j) => items[j === i - 1 ? i : j === i ? i - 1 : j]))} />
+            <Act icon="close" label="Remove item" danger onClick={() => push(items.filter((_, j) => j !== i))} />
+          </li>
+        ))}
+      </ul>
+      <button type="button" onClick={() => push([...items, { label: "New item", icon: "" }])} className="justify-self-start text-sm font-medium text-primary hover:underline">+ Add item</button>
+    </Group>
+  );
+}
+
+function ContentField({ sel }: { sel: Selection }) {
+  const [v, setV] = useState(sel.text);
+  useEffect(() => setV(sel.text), [sel.id, sel.text]);
+  return (
+    <Group title="Content">
+      <input aria-label="Text content" value={v} onChange={(e) => setV(e.target.value)} onBlur={() => v !== sel.text && cmd({ cmd: "text", text: v })}
+        onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} className="h-9 rounded-md border border-input bg-surface px-3 text-sm" />
+      <p className="text-xs text-muted-foreground">Or double-click the text in your app.</p>
+    </Group>
+  );
+}
+
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return <fieldset className="grid min-w-0 grid-cols-1 gap-3 border-0 p-0"><legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-foreground/70">{title}</legend>{children}</fieldset>;
 }
@@ -80,6 +127,31 @@ export function ElementPanel({ selection, edits, set, clear }: {
         )}
       </div>
 
+      <div role="toolbar" aria-label="Arrange" className="flex flex-wrap gap-1.5">
+        <Act icon="arrow_upward" label="Move up (Alt+↑)" disabled={selection.index === 0} onClick={() => cmd({ cmd: "up" })} />
+        <Act icon="arrow_downward" label="Move down (Alt+↓)" disabled={selection.index >= selection.siblings - 1} onClick={() => cmd({ cmd: "down" })} />
+        <Act icon="content_copy" label="Duplicate (Ctrl+D)" onClick={() => cmd({ cmd: "duplicate" })} />
+        <Act icon="view_column" label="Group in a row (Ctrl+G)" onClick={() => cmd({ cmd: "group", layout: "row" })} />
+        <Act icon="view_agenda" label="Group in a column" onClick={() => cmd({ cmd: "group", layout: "column" })} />
+        <Act icon="ungroup" label="Ungroup (Ctrl+Shift+G)" disabled={!selection.childCount} onClick={() => cmd({ cmd: "ungroup" })} />
+        <Act icon="delete" label="Delete (Del)" danger onClick={() => cmd({ cmd: "delete" })} />
+      </div>
+      {selection.multi > 1 && <p className="text-xs text-muted-foreground">{selection.multi} selected (Shift+click). Group wraps them together.</p>}
+
+      {(selection.text || selection.icon) && !selection.icon && <ContentField sel={selection} />}
+      {selection.icon && (
+        <Group title="Icon">
+          <ul className="grid grid-cols-8 gap-1" aria-label="Icons">
+            {ICONS.map((n) => (
+              <li key={n}><button type="button" aria-label={n} title={n} onClick={() => cmd({ cmd: "text", text: n })}
+                className={cn("grid size-8 place-items-center rounded-md hover:bg-muted", selection.text === n && "bg-primary/10 text-primary")}>
+                <span aria-hidden className="icon material-symbols-rounded text-xl">{n}</span></button></li>
+            ))}
+          </ul>
+        </Group>
+      )}
+      {selection.kebab && selection.items && <ItemsEditor sel={selection} />}
+
       <Group title="Text">
         <Color label="Text color" value={hex("color", s.color)} onChange={(v) => put("color", v)} />
         <Num label="Size" value={px(val("font-size", s["font-size"]))} min={8} max={72} onChange={(n) => put("font-size", `${n}px`)} />
@@ -100,6 +172,27 @@ export function ElementPanel({ selection, edits, set, clear }: {
       <Group title="Position">
         <Num label="Space above" value={px(val("margin-top", s["margin-top"]))} max={120} onChange={(n) => put("margin-top", `${n}px`)} />
         <Num label="Space below" value={px(val("margin-bottom", s["margin-bottom"]))} max={120} onChange={(n) => put("margin-bottom", `${n}px`)} />
+      </Group>
+
+      {selection.container && (
+        <Group title="Layout">
+          <Seg label="Direction" value={val("flex-direction", s["flex-direction"]).startsWith("row") && val("display", s.display).includes("flex") ? "row" : val("display", s.display).includes("flex") ? "column" : "block"}
+            onChange={(v) => { if (v === "block") put("display", "block"); else { put("display", "flex"); put("flex-direction", v); } }}
+            options={[{ value: "block", label: "Stack" }, { value: "row", label: "Row" }, { value: "column", label: "Column" }]} />
+          <Num label="Gap" value={px(val("gap", s.gap))} max={64} onChange={(n) => put("gap", `${n}px`)} />
+          <Seg label="Align" value={val("align-items", s["align-items"])} onChange={(v) => put("align-items", v)} options={[{ value: "flex-start", label: "Start" }, { value: "center", label: "Center" }, { value: "flex-end", label: "End" }, { value: "stretch", label: "Fill" }]} />
+          <Seg label="Justify" value={val("justify-content", s["justify-content"])} onChange={(v) => put("justify-content", v)} options={[{ value: "flex-start", label: "Start" }, { value: "center", label: "Center" }, { value: "space-between", label: "Spread" }, { value: "flex-end", label: "End" }]} />
+          <Seg label="Wrap" value={val("flex-wrap", s["flex-wrap"])} onChange={(v) => put("flex-wrap", v)} options={[{ value: "nowrap", label: "No" }, { value: "wrap", label: "Wrap" }]} />
+        </Group>
+      )}
+      <Group title="Size">
+        <Num label="Width" value={px(val("width", s.width))} max={1600} onChange={(n) => put("width", `${n}px`)} />
+        <Num label="Height" value={px(val("height", s.height))} max={1200} onChange={(n) => put("height", `${n}px`)} />
+        <div className="flex gap-3 text-xs font-medium text-primary">
+          <button type="button" onClick={() => put("width", "100%")} className="hover:underline">Fill width</button>
+          <button type="button" onClick={() => { put("width", null); put("height", null); }} className="hover:underline">Auto size</button>
+        </div>
+        <p className="text-xs text-muted-foreground">Or drag the handles in your app.</p>
       </Group>
 
       <div className="flex items-center gap-4 text-sm">

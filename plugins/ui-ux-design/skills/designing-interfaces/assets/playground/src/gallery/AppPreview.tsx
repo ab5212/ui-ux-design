@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { buildCss, fontLinks, isDark, type Settings } from "@/lib/settings";
-import { editsCss, type Edits, type Selection } from "@/lib/edits";
+import { editsCss, OPS_KEY, type Edits, type OpsState, type Selection, type TreeNode } from "@/lib/edits";
 
 const KEY = "playground-app-url";
 
@@ -17,7 +17,10 @@ function parse(url: string) {
 }
 
 /** Frames the user's running app. Every change in the Customize panel is posted to it, and bridge.js applies it live. */
-export function AppPreview({ settings, edits, editMode, setEditMode, onSelect }: { settings: Settings; edits: Edits; editMode: boolean; setEditMode: (on: boolean) => void; onSelect: (s: Selection | null) => void }) {
+export function AppPreview({ settings, edits, editMode, setEditMode, onSelect, onTree, onOps, onStyle, ops }: {
+  settings: Settings; edits: Edits; editMode: boolean; setEditMode: (on: boolean) => void; onSelect: (s: Selection | null) => void;
+  onTree: (nodes: TreeNode[]) => void; onOps: (s: OpsState) => void; onStyle: (selector: string, props: Record<string, string | null>) => void; ops: OpsState;
+}) {
   const [draft, setDraft] = useState(() => localStorage.getItem(KEY) || "http://localhost:3000");
   const [src, setSrc] = useState(() => parse(localStorage.getItem(KEY) || "")?.href ?? ""); // the app address the user typed
   const [frameSrc, setFrameSrc] = useState(""); // the same page served through the playground's proxy, which adds the bridge
@@ -35,15 +38,25 @@ export function AppPreview({ settings, edits, editMode, setEditMode, onSelect }:
 
   useEffect(() => {
     const up = () => target && frame.current?.contentWindow?.postMessage({ type: "playground:select-parent" }, target);
+    const run = (e: Event) => target && frame.current?.contentWindow?.postMessage({ type: "playground:do", ...(e as CustomEvent).detail }, target);
     addEventListener("playground:select-parent", up);
-    return () => removeEventListener("playground:select-parent", up);
+    addEventListener("playground:do", run);
+    return () => { removeEventListener("playground:select-parent", up); removeEventListener("playground:do", run); };
   });
 
   useEffect(() => {
     const onMessage = (e: MessageEvent) => {
       if (e.source !== frame.current?.contentWindow) return;
-      if (e.data?.type === "playground:ready") { setConnected(true); post(); }
-      if (e.data?.type === "playground:select") onSelect(e.data.info ?? null);
+      const m = e.data;
+      if (m?.type === "playground:ready") {
+        setConnected(true); post();
+        // a freshly loaded page has none of the structural changes yet: replay the saved ones
+        try { const saved = JSON.parse(localStorage.getItem(OPS_KEY) || "[]"); if (saved.length) frame.current?.contentWindow?.postMessage({ type: "playground:do", cmd: "replay", ops: saved }, target!); } catch { /* ignore */ }
+      }
+      if (m?.type === "playground:select") onSelect(m.info ?? null);
+      if (m?.type === "playground:tree") onTree(m.nodes ?? []);
+      if (m?.type === "playground:ops") onOps({ ops: m.ops, canUndo: m.canUndo, canRedo: m.canRedo });
+      if (m?.type === "playground:style") onStyle(m.selector, m.props);
     };
     addEventListener("message", onMessage);
     return () => removeEventListener("message", onMessage);
@@ -81,6 +94,16 @@ export function AppPreview({ settings, edits, editMode, setEditMode, onSelect }:
         <button type="submit" className="h-10 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
           {src ? "Reload" : "Open my app"}
         </button>
+        {src && connected && editMode && (
+          <span className="inline-flex gap-1" role="group" aria-label="History">
+            {([["undo", "undo", ops.canUndo], ["redo", "redo", ops.canRedo]] as const).map(([c, ic, on]) => (
+              <button key={c} type="button" aria-label={c === "undo" ? "Undo" : "Redo"} disabled={!on} onClick={() => dispatchEvent(new CustomEvent("playground:do", { detail: { cmd: c } }))}
+                className="grid size-10 place-items-center rounded-md border border-input bg-surface focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40">
+                <span aria-hidden className="icon material-symbols-rounded text-xl">{ic}</span>
+              </button>
+            ))}
+          </span>
+        )}
         {src && connected && (
           <button type="button" role="switch" aria-checked={editMode} onClick={() => setEditMode(!editMode)}
             className={`h-10 rounded-md border px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring ${editMode ? "border-primary bg-primary/10 text-primary" : "border-input bg-surface"}`}>
