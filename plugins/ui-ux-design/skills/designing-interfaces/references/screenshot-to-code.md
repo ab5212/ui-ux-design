@@ -78,7 +78,7 @@ Don't paste raw hex values into components.
 - **Components with all their states:** hover, `:focus-visible`, active, disabled, plus loading and error where they apply, even though the screenshot shows one.
 - **Interactive parts that need behavior** use the platform: `<dialog>` for modals, `<details>` for disclosure, `aria-expanded` on menu buttons, `aria-current` on the active nav item.
 - **Images:** use a placeholder with the right `aspect-ratio` and a meaningful `alt` (or `alt=""` if decorative). Say what to replace. Don't hotlink images or fonts you can't license.
-- **Icons:** inline SVG with `aria-hidden="true"` and a text label nearby. Simple shapes you can draw reliably are fine; for anything complex use a placeholder and name the icon set (Lucide, Heroicons).
+- **Icons:** Material Symbols (https://fonts.google.com/icons) as `<span class="material-symbols-rounded" aria-hidden="true">name</span>` with a text label nearby. Pick the closest Material Symbols name for each icon in the image. See `references/icons-fonts.md`.
 - **Fonts:** choose the nearest widely available family, or the system stack, and say what the screenshot seems to use. Don't claim a match you can't confirm.
 - **Dark mode:** include it if tokens are in use (it comes with the token file) unless the user said not to.
 - **Copy:** use the transcribed text. Replace obvious filler only if the user asked.

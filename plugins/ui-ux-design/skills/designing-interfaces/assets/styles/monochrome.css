@@ -1,0 +1,69 @@
+/*
+  Style preset: monochrome
+  Monochromatic: one hue in many lightness steps for unity and sophistication. Portfolios, galleries, design-led sites.
+
+  How to use: append this file AFTER tokens.css (or merge the values into your own tokens).
+  It redefines every color token for BOTH :root and .dark, because :root and .dark have equal
+  specificity and the later rule wins; a color defined in only one block would leak into the other theme.
+  Check it:  node scripts/check-contrast.mjs assets/tokens.css assets/styles/monochrome.css
+  Fonts (Google Fonts): Manrope or DM Sans
+  google-fonts: https://fonts.googleapis.com/css2?family=Manrope:wght@400..700&display=swap
+*/
+:root {
+  --radius: 0.5rem;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+:root {
+  --background: oklch(0.98 0.008 var(--brand-h));
+  --foreground: oklch(0.2 0.03 var(--brand-h));
+  --surface: oklch(0.955 0.02 var(--brand-h));
+  --surface-raised: oklch(0.935 0.03 var(--brand-h));
+  --muted: oklch(0.93 0.02 var(--brand-h));
+  --muted-foreground: oklch(0.44 0.04 var(--brand-h));
+  --primary: oklch(0.45 0.13 var(--brand-h));
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.9 0.04 var(--brand-h));
+  --secondary-foreground: oklch(0.25 0.07 var(--brand-h));
+  --accent: oklch(0.86 0.06 var(--brand-h));
+  --accent-foreground: oklch(0.25 0.09 var(--brand-h));
+  --destructive: oklch(0.52 0.21 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.5 0.14 150);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.82 0.16 85);
+  --warning-foreground: oklch(0.22 0.05 70);
+  --info: oklch(0.52 0.15 235);
+  --info-foreground: oklch(0.99 0 0);
+  --border: oklch(0.88 0.03 var(--brand-h));
+  --input: oklch(0.56 0.05 var(--brand-h));
+  --ring: oklch(0.45 0.13 var(--brand-h));
+}
+
+.dark {
+  --background: oklch(0.17 0.02 var(--brand-h));
+  --foreground: oklch(0.95 0.01 var(--brand-h));
+  --surface: oklch(0.22 0.03 var(--brand-h));
+  --surface-raised: oklch(0.26 0.035 var(--brand-h));
+  --muted: oklch(0.25 0.03 var(--brand-h));
+  --muted-foreground: oklch(0.78 0.03 var(--brand-h));
+  --primary: oklch(0.76 0.11 var(--brand-h));
+  --primary-foreground: oklch(0.16 0.03 var(--brand-h));
+  --secondary: oklch(0.3 0.04 var(--brand-h));
+  --secondary-foreground: oklch(0.94 0.015 var(--brand-h));
+  --accent: oklch(0.34 0.06 var(--brand-h));
+  --accent-foreground: oklch(0.93 0.03 var(--brand-h));
+  --destructive: oklch(0.72 0.17 25);
+  --destructive-foreground: oklch(0.16 0.02 25);
+  --success: oklch(0.74 0.15 150);
+  --success-foreground: oklch(0.16 0.02 150);
+  --warning: oklch(0.84 0.15 85);
+  --warning-foreground: oklch(0.2 0.04 70);
+  --info: oklch(0.74 0.12 235);
+  --info-foreground: oklch(0.16 0.02 235);
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(0.62 0.04 var(--brand-h));
+  --ring: oklch(0.76 0.11 var(--brand-h));
+}
+
+/* Use tints and shades of the brand hue for everything except status colors, which keep their meaning (red, green, amber, blue).
+   Separate regions by lightness steps, not extra hues. Check that adjacent steps still read as different (3:1 for control edges). */

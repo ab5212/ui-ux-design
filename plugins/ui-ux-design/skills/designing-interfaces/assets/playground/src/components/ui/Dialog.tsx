@@ -1,5 +1,5 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import { X } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 
@@ -52,7 +52,7 @@ export function DialogContent({ title, description, size = "sm", footer, sheetOn
             aria-label="Close"
             className="-me-2 -mt-1 inline-flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-ring"
           >
-            <X className="size-4" aria-hidden />
+            <X className="text-base" aria-hidden />
           </DialogPrimitive.Close>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6">{children}</div>

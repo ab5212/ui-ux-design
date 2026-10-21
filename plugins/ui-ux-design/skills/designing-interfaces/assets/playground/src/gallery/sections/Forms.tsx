@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search } from "@/components/ui/icons";
 import { Button } from "@/components/ui/Button";
 import { Checkbox, Field, Input, RadioGroup, Select, Textarea } from "@/components/ui/Field";
 import { Switch } from "@/components/ui/Switch";
@@ -38,7 +38,7 @@ export function FormsDemo() {
           <Field label="Search projects">
             {({ id }) => (
               <div className="relative">
-                <Search aria-hidden className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Search aria-hidden className="pointer-events-none absolute start-3 top-1/2 text-base -translate-y-1/2 text-muted-foreground" />
                 <Input id={id} type="search" enterKeyHint="search" placeholder="Name or ID" className="ps-9" />
               </div>
             )}

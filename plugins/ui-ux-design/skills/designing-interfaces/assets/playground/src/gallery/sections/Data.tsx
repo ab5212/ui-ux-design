@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowDown, ArrowUp, FolderPlus, MoreHorizontal } from "lucide-react";
+import { ArrowDown, ArrowUp, FolderPlus, MoreHorizontal } from "@/components/ui/icons";
 import { Avatar, Badge, Progress, Skeleton, Spinner } from "@/components/ui/Display";
 import { Button } from "@/components/ui/Button";
 import { Demo } from "../Section";
@@ -150,7 +150,7 @@ export function FeedbackDemo() {
       <Demo title="Empty state" note="What goes here, and the one action that fills it." className="py-12">
         <div className="mx-auto grid max-w-sm justify-items-center gap-3 text-center">
           <span className="grid size-12 place-items-center rounded-xl bg-muted text-muted-foreground">
-            <FolderPlus aria-hidden className="size-6" />
+            <FolderPlus aria-hidden className="text-2xl" />
           </span>
           <h4 className="text-lg font-semibold">No projects yet</h4>
           <p className="text-sm text-muted-foreground">Projects group your files, tasks and people. Create one to get started, or import from a CSV.</p>

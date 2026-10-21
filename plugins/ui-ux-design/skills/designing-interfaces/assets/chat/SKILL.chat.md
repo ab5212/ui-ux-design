@@ -22,7 +22,7 @@ Never generate or change a UI from a vague request. Send **one short message** w
 
 **Output technology**, when not stated: (a) one HTML + CSS file *(recommended, runs anywhere)*, (b) HTML + Tailwind, (c) React, (d) Vue, Svelte or Angular, (e) other. Translation notes for each: `references/frameworks.md`.
 
-**Styles to offer** (three or four that fit the product, recommended first): clean and minimal, soft and friendly, glass, clay, bold and raw (neo-brutalism), editorial. Details and warnings: `references/direction.md`. Don't offer neumorphism for controls; its edges fail contrast.
+**Styles to offer** (three or four that fit the product, recommended first): clean and minimal, flat, material, soft and friendly, glass, clay, skeuomorphic, bold and raw (neo-brutalism), editorial, monochromatic, color blocking, retro / vintage, minimal vintage, retro-futuristic, art deco; offer a 'show me all styles' option. Details and warnings: `references/direction.md`. Don't offer neumorphism for controls; its edges fail contrast.
 
 ## How to answer after they choose
 
@@ -43,6 +43,7 @@ Never generate or change a UI from a vague request. Send **one short message** w
 | Radius | controls 6, cards 12, dialogs 16; nested: outer = inner + padding |
 | Contrast | text 4.5:1, large text 3:1, UI boundaries and focus ring 3:1 |
 | Motion | 120–300ms, transform and opacity only, honor reduced motion |
+| Fonts and icons | Google Fonts (https://fonts.google.com) and Material Symbols (https://fonts.google.com/icons) only; see `references/icons-fonts.md` |
 | Breakpoints | 640, 768, 1024, 1280, mobile-first |
 
 ## Non-negotiables

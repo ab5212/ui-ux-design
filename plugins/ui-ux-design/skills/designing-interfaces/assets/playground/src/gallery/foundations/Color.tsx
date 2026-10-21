@@ -1,37 +1,8 @@
-import { useEffect, useState } from "react";
 import { apcaLc, cssVar, wcagRatio } from "@/lib/contrast";
 import { Demo } from "../Section";
 import { cn } from "@/lib/cn";
-
-const PAIRS: { fill: string; fg: string; label: string; min: number }[] = [
-  { fill: "--background", fg: "--foreground", label: "Background", min: 4.5 },
-  { fill: "--surface", fg: "--foreground", label: "Surface", min: 4.5 },
-  { fill: "--muted", fg: "--muted-foreground", label: "Muted", min: 4.5 },
-  { fill: "--primary", fg: "--primary-foreground", label: "Primary", min: 4.5 },
-  { fill: "--secondary", fg: "--secondary-foreground", label: "Secondary", min: 4.5 },
-  { fill: "--accent", fg: "--accent-foreground", label: "Accent", min: 4.5 },
-  { fill: "--destructive", fg: "--destructive-foreground", label: "Destructive", min: 4.5 },
-  { fill: "--success", fg: "--success-foreground", label: "Success", min: 4.5 },
-  { fill: "--warning", fg: "--warning-foreground", label: "Warning", min: 4.5 },
-  { fill: "--info", fg: "--info-foreground", label: "Info", min: 4.5 },
-];
-
-const LINES: { token: string; label: string; min: number }[] = [
-  { token: "--border", label: "Border (decorative)", min: 0 },
-  { token: "--input", label: "Input boundary", min: 3 },
-  { token: "--ring", label: "Focus ring", min: 3 },
-];
-
-/** Re-measure whenever the theme or hue changes (attributes on <html>). */
-function useThemeTick() {
-  const [tick, setTick] = useState(0);
-  useEffect(() => {
-    const obs = new MutationObserver(() => setTick((t) => t + 1));
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "style", "data-radius"] });
-    return () => obs.disconnect();
-  }, []);
-  return tick;
-}
+import { LINES, PAIRS } from "@/lib/tokens";
+import { useTokenTick } from "@/lib/useTokenTick";
 
 function Ratio({ fg, bg, min }: { fg: string; bg: string; min: number }) {
   const base = cssVar("--background");
@@ -49,7 +20,7 @@ function Ratio({ fg, bg, min }: { fg: string; bg: string; min: number }) {
 }
 
 export function ColorFoundation() {
-  useThemeTick();
+  useTokenTick();
   return (
     <>
       <Demo title="Semantic pairs" note="Every fill has a -foreground partner. Ratios are measured live for the current theme and hue.">

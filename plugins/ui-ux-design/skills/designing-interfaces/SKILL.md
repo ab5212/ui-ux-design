@@ -78,6 +78,7 @@ Read only the files the task needs. Each file starts with beginner defaults, the
 | Choosing a visual style, asking the user, style presets, `DESIGN.md` | `references/direction.md` |
 | Set up or audit tokens, Tailwind theme, CSS variables, theming, dark mode wiring | `references/tokens.md` |
 | Fonts, type scale, line height, line length, numbers | `references/typography.md` |
+| Icons and font loading (Google Fonts, Material Symbols) | `references/icons-fonts.md` |
 | Palette, semantic colors, contrast, dark mode, states | `references/color.md` |
 | Spacing scale, grids, density, alignment | `references/spacing-layout.md` |
 | Mobile, tablet, laptop, desktop, ultrawide; navigation per size; touch vs mouse | `references/responsive.md` |
@@ -142,6 +143,7 @@ These rules hold regardless of style or brand.
 21. Never choose the visual style of a new UI silently. Ask (or follow `DESIGN.md`), per `references/direction.md`.
 22. Never rewrite existing code unasked. Show findings as numbered choices and change only what the user approves (`references/audit-existing-code.md`).
 23. Never start from an image without asking what to do with it, and never copy logos, brand marks or proprietary assets from one.
+24. Fonts come from Google Fonts and icons from Material Symbols (https://fonts.google.com, https://fonts.google.com/icons). No other icon sets, no emoji icons. Setup: `references/icons-fonts.md`.
 
 ## Component delivery contract
 
@@ -170,7 +172,7 @@ bash <this-skill-dir>/scripts/scaffold-playground.sh ./ui-playground   # copies 
 cd ui-playground && npm run dev                                         # http://localhost:5173
 ```
 
-To preview a style from Step 1 before building, add `--style glass` (or `soft`, `clay`, `brutalist`, `editorial`). To preview the project's own tokens, add `--tokens path/to/tokens.css` to the scaffold command. If the variable names differ from this skill's, edit the `@theme inline` block in `ui-playground/src/styles/tokens.css` to match. The script needs Node.js 20.19+ and refuses to overwrite a non-empty directory.
+To preview a style from Step 1 before building, add `--style glass` (`flat`, `material`, `soft`, `glass`, `clay`, `skeuomorphic`, `brutalist`, `editorial`, `monochrome`, `colorblock`, `retro`, `minimalvintage`, `retrofuturistic` or `artdeco`). To preview the project's own tokens, add `--tokens path/to/tokens.css` to the scaffold command. If the variable names differ from this skill's, edit the `@theme inline` block in `ui-playground/src/styles/tokens.css` to match. The script needs Node.js 20.19+ and refuses to overwrite a non-empty directory.
 
 Audit the code of any front-end project (any stack), or the contrast of a token file, at any time:
 

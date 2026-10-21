@@ -15,6 +15,8 @@ How to implement each well-known aesthetic, when it fits, and how it fails. A st
 - Bento grid
 - Gradient / aurora
 - Dark UI
+- Layout and technique add-ons
+- Style index (the 22 common types)
 - Mixing styles
 
 ---
@@ -28,11 +30,20 @@ How to implement each well-known aesthetic, when it fits, and how it fails. A st
 | Developer tools | Minimal dark UI, neo-brutalism, Swiss | Skeuomorphism, clay |
 | Creative, portfolio, indie | Neo-brutalism, Swiss, expressive gradients | Generic Material |
 | Kids, playful brands | Claymorphism, bold color, pills | Swiss austerity |
-| Media, entertainment | Dark UI, glass over imagery | Brutalism |
+| Media, entertainment | Dark UI, glass over imagery, retro-futuristic | Brutalism |
+| Luxury, fashion, hospitality | Art Deco, editorial, monochromatic | Brutalism, clay |
+| Heritage, nostalgic brands | Retro / vintage, minimal vintage | Glass, retro-futuristic |
 
 Decide with the user (SKILL.md, Step 2, and `direction.md`), not from what's trending.
 
 ## Flat / minimal
+
+Two related looks. **Clean and minimal** is the base `tokens.css`: thin borders, quiet colors. **Flat** is its own preset (`styles/flat.css`): solid saturated color blocks, no shadows, no gradients, no textures, crisp edges, small radii, simple glyph icons. Flat comes from the 2012-13 move away from skeuomorphism (Windows 8, iOS 7); "Flat 2.0" or semi-flat adds a hint of depth back. Flat details:
+
+- Hierarchy from color, size and weight, not depth. Cards are filled blocks (`bg-surface`), not outlined boxes.
+- Palette: one strong brand color plus tinted neutrals; vivid semantic colors. Big blocks of color are fine; every text and fill pair still passes contrast.
+- Icons: Material Symbols, one weight, solid or simple outline, no shading.
+- Controls need edges: a 2px `border-input` at 3:1 on text fields, a clear focus ring, pressed and hover states by color shift (no shadow lift).
 
 - **Implement:** solid fills, 1px borders or very light shadows, hierarchy carried by type and spacing, one accent color.
 - **When:** almost always a safe base, especially for tools.
@@ -120,6 +131,53 @@ Rules are in `color.md` (dark mode is a separate design). As a primary style:
 - **Implement:** near-black base (OKLCH L 0.14–0.18, tinted to the brand), tonal elevation, 1px translucent borders, desaturated accents, white text at slightly below full brightness for body text.
 - **When:** media, pro creative tools, developer tools, products used in low light.
 - **Fails when:** pure `#000` with pure white text (halation), saturated accents that vibrate, or shadows used as the only separation.
+
+## Layout and technique add-ons
+
+These are not looks. They combine with any preset. Offer them for websites and landing pages; skip them for dashboards and apps.
+
+| Add-on | Implement | Watch out for |
+|---|---|---|
+| Card-based | Repeatable cards in a responsive grid (`grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr))`), one stretched link per card | Identical cards with no hierarchy; nested cards |
+| Grid-based | A 12-column grid or CSS Grid with named areas; align everything to it; image-heavy pages use a masonry or fixed-ratio grid | Fixed ratios that crop faces or text; reflow at 360px |
+| Single-page | One long page with anchor sections, a sticky nav with `aria-current`, `scroll-behavior: smooth` (off under reduced motion) | Deep-linking, focus management when jumping, very long pages |
+| Fullscreen | Hero with an image or video at `100dvh`, text over a scrim, poster image first | Text contrast over imagery (add a scrim), autoplay (muted, controls, off for reduced motion), page weight |
+| Typography-led | Type is the main visual: a large display size, tight leading, a distinctive Google Font, little else | One good pairing only; keep body at 16px+ and 65ch |
+| Asymmetrical | Offset columns, overlapping blocks, uneven whitespace, a clear reading path and a strong focal point | Reading order must match DOM order; collapse to one column on phones |
+| Illustrative | Custom illustrations or spot art for hero, empty states and onboarding; one style, one palette from the tokens | Always provide alt or `aria-hidden`; no text inside images; SVG over PNG |
+| Parallax | Subtle depth: `transform: translate3d` on one or two layers, with the rest static | Off under `prefers-reduced-motion`; no scroll-jacking; keep it to hero or one story section; jank on phones |
+| Responsive | Not an add-on: mandatory for every output (see `responsive.md`) | |
+
+## Style index (the 22 common types)
+
+Where each common UI type lives in this skill.
+
+| Type | In this skill |
+|---|---|
+| Flat | preset `flat` |
+| Material | preset `material` |
+| Skeuomorphic | preset `skeuomorphic` |
+| Parallax scrolling | add-on |
+| Responsive | always on (`responsive.md`) |
+| Grid-based | add-on |
+| Single-page | add-on |
+| Fullscreen | add-on |
+| Typography-centric | add-on, and preset `editorial` |
+| Card-based | add-on |
+| Retro / vintage | preset `retro` |
+| Dark mode | every preset ships a tuned `.dark` theme; the user does not need to pick it |
+| Neumorphism | guidance only, by name; not offered for controls because it fails contrast |
+| Brutalism | preset `brutalist` ("Bold and raw") |
+| Asymmetrical layouts | add-on |
+| Illustrative | add-on |
+| Glassmorphism | preset `glass` |
+| Retro-futuristic | preset `retrofuturistic` |
+| Art Deco | preset `artdeco` |
+| Minimal vintage | preset `minimalvintage` |
+| Monochromatic | preset `monochrome` |
+| Color blocking | preset `colorblock` |
+
+Also available: `soft`, `clay`, `editorial` and the base `tokens.css` ("Clean and minimal").
 
 ## Mixing styles
 

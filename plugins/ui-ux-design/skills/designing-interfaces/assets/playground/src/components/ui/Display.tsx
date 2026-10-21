@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useRef, useState } from "react";
-import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "@/components/ui/icons";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/cn";
 
@@ -36,17 +36,17 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 /* ---------- Alert ---------- */
 const alertIcons = { info: Info, success: CheckCircle2, warning: AlertTriangle, destructive: XCircle };
 const alertTone = {
-  info: "border-info/40 bg-info/8 [&>svg]:text-info",
-  success: "border-success/40 bg-success/8 [&>svg]:text-success",
-  warning: "border-warning/60 bg-warning/12 [&>svg]:text-warning-foreground dark:[&>svg]:text-warning",
-  destructive: "border-destructive/40 bg-destructive/8 [&>svg]:text-destructive",
+  info: "border-info/40 bg-info/8 [&>.icon]:text-info",
+  success: "border-success/40 bg-success/8 [&>.icon]:text-success",
+  warning: "border-warning/60 bg-warning/12 [&>.icon]:text-warning-foreground dark:[&>.icon]:text-warning",
+  destructive: "border-destructive/40 bg-destructive/8 [&>.icon]:text-destructive",
 };
 
 export function Alert({ tone = "info", title, children, action }: { tone?: keyof typeof alertTone; title?: string; children: React.ReactNode; action?: React.ReactNode }) {
   const Icon = alertIcons[tone];
   return (
     <div className={cn("flex gap-3 rounded-lg border p-4 text-sm", alertTone[tone])}>
-      <Icon aria-hidden className="mt-0.5 size-4 shrink-0" />
+      <Icon aria-hidden className="mt-0.5 text-base shrink-0" />
       <div className="grid flex-1 gap-1">
         {title && <p className="font-semibold">{title}</p>}
         <div className="text-foreground/90">{children}</div>
@@ -166,7 +166,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               onClick={() => dismiss(t.id)}
               className="inline-flex size-8 items-center justify-center rounded-md opacity-70 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-background"
             >
-              <X aria-hidden className="size-4" />
+              <X aria-hidden className="text-base" />
             </button>
           </div>
         ))}

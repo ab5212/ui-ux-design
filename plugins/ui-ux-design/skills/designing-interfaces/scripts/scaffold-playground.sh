@@ -3,7 +3,8 @@
 #
 # Usage:  bash scaffold-playground.sh [target-dir] [--style NAME] [--tokens path/to/tokens.css]
 #   target-dir  defaults to ./ui-playground (must not exist or must be empty)
-#   --style     layer a style preset after the tokens: soft, glass, clay, brutalist or editorial
+#   --style     layer a style preset after the tokens: any file name in assets/styles (flat, material, soft, glass, clay, skeuomorphic, brutalist, editorial,
+#                monochrome, colorblock, retro, minimalvintage, retrofuturistic, artdeco)
 #   --tokens    replace the template tokens with the project's own token file (applied before --style)
 #
 # Then:   cd <target-dir> && npm run dev   →  http://localhost:5173
@@ -36,6 +37,9 @@ mkdir -p "$TARGET"
 # Copy everything except build output and installed modules.
 ( cd "$TEMPLATE" && tar --exclude=node_modules --exclude=dist -cf - . ) | ( cd "$TARGET" && tar -xf - )
 
+# Style presets for the in-page Style picker.
+mkdir -p "$TARGET/src/styles/presets" && cp "$SKILL_DIR"/assets/styles/*.css "$TARGET/src/styles/presets/"
+
 # The contrast script path inside the template points at the skill; make it absolute for the copy.
 node -e '
   const fs = require("fs"); const p = process.argv[1] + "/package.json";
@@ -56,6 +60,12 @@ if [[ -n "$STYLE" ]]; then
   fi
   # Appended after the tokens so it wins the cascade (see the header comment in the preset).
   { echo; cat "$PRESET"; } >> "$TARGET/src/styles/tokens.css"
+  # A preset that needs Google Fonts names its stylesheet on a "google-fonts:" line; add it to the page.
+  FONTS="$(sed -n 's/^ *google-fonts: *//p' "$PRESET" | head -1)"
+  if [[ -n "$FONTS" ]]; then
+    FONTS="${FONTS//&/\\&}"  # a literal & would mean "the matched text" in the sed replacement
+    sed -i.bak "s#</head>#    <link rel=\"stylesheet\" href=\"$FONTS\" />\n  </head>#" "$TARGET/index.html" && rm -f "$TARGET/index.html.bak"
+  fi
   echo "Applied style preset: $STYLE"
 fi
 

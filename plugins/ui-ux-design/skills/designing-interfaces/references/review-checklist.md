@@ -68,7 +68,7 @@ Order: blockers → major → minor. Fix blockers before anything cosmetic. Don'
 - [ ] Type scale has clear steps; no more than 3 weights; headings use `text-wrap: balance`
 - [ ] Numbers in tables and prices use `tabular-nums` and right alignment
 - [ ] Nested radii are concentric (outer = inner + padding)
-- [ ] Icons from one family, one stroke width, optically aligned with text
+- [ ] Icons are Material Symbols (one style, one weight) and fonts are Google Fonts (`references/icons-fonts.md`); icons optically aligned with text
 - [ ] Truncated text has a way to see the full value
 - [ ] Copy: verb + object buttons, sentence case, specific errors, no filler
 - [ ] Logical properties used, so RTL works; long translated strings fit

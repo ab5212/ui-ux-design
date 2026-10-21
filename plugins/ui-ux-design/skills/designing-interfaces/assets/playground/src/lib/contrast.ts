@@ -54,3 +54,9 @@ export function apcaLc(fg: string, bg: string, base: string) {
   const c = (s ** 0.65 - t ** 0.62) * 1.14;
   return c > -0.1 ? 0 : (c + 0.027) * 100;
 }
+
+/** Any CSS color the browser understands -> #rrggbb (what <input type="color"> needs). */
+export function toHex(color: string) {
+  const [r, g, b] = toRgba(color);
+  return "#" + [r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("");
+}

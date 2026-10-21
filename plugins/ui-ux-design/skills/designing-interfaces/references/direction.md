@@ -43,7 +43,9 @@ Never ask about something you can read from the project (framework, Tailwind ver
 
 Ask only the questions whose answers you don't already have.
 
-**Q1. Look and feel** (always, when the gate says ask). Offer the options from the menu below that fit the product, plus "Not sure, you choose".
+**Q1. Look and feel** (always, when the gate says ask). Offer the options from the menu below that fit the product, plus "Not sure, you choose" and "Show me all styles".
+
+**Q1b. Layout approach** (optional; ask only for websites and landing pages, and only if the user has not said). Offer the add-ons from `visual-styles.md` "Layout and technique add-ons": card-based *(default for content)*, grid-based, single-page, fullscreen hero, typography-led, asymmetrical, illustrative, parallax. They combine with any look above. Skip it for dashboards and apps.
 
 **Q2. Brand color.**
 - I have one (tell me the hex or the hue)
@@ -67,7 +69,8 @@ Example message (a dashboard for a small SaaS team):
 > 1. Clean and minimal: thin borders, quiet colors, content first *(recommended for a data-heavy tool)*
 > 2. Editorial: big type, sharp corners, hairline rules, very structured
 > 3. Soft and friendly: rounded shapes, gentle shadows, warmer
-> 4. Bold and raw: thick black borders, hard shadows, loud color
+> 4. Flat: solid color blocks, no shadows or gradients, crisp and bright
+> 5. Bold and raw: thick black borders, hard shadows, loud color
 >
 > **2. Brand color:** (a) I have one, (b) match my logo or site, (c) pick for me
 >
@@ -77,26 +80,40 @@ Example message (a dashboard for a small SaaS team):
 
 ## Style menu, filtered by product type
 
-Offer three or four, not all six. Put the recommended one first.
+Offer three or four, not all fifteen. If the user asks "what else is there?", list every name in the table below in one line and let them choose. Put the recommended one first.
 
 | Product | Offer, in this order |
 |---|---|
-| Dashboard, admin, B2B or SaaS tool | Minimal *(rec.)*, Editorial, Soft, Bold and raw |
-| Consumer app, community, wellness, finance for individuals | Soft *(rec.)*, Minimal, Clay, Glass |
-| Kids, games, playful brand | Clay *(rec.)*, Soft, Bold and raw |
-| Developer tool, indie product, creative portfolio | Bold and raw, Minimal *(rec.)*, Editorial |
-| Content site, docs, magazine, portfolio | Editorial *(rec.)*, Minimal, Soft |
-| Media, entertainment, marketing hero, product with rich imagery | Glass *(rec.)*, Editorial, Minimal |
-| Not clear | Minimal *(rec.)*, Soft, Editorial, Bold and raw |
+| Dashboard, admin, B2B or SaaS tool | Minimal *(rec.)*, Flat, Material, Editorial |
+| Consumer app, community, wellness, personal finance | Soft *(rec.)*, Material, Flat, Glass |
+| Kids, games, playful brand | Clay *(rec.)*, Flat, Color blocking, Soft |
+| Developer tool, indie product | Bold and raw, Minimal *(rec.)*, Retro-futuristic, Editorial |
+| Content site, docs, magazine, blog | Editorial *(rec.)*, Minimal vintage, Monochromatic, Minimal |
+| Media, entertainment, marketing hero, rich imagery | Glass *(rec.)*, Editorial, Color blocking, Retro-futuristic |
+| Marketing site, landing page, kiosk, icon-led mobile app | Flat *(rec.)*, Color blocking, Soft, Minimal |
+| Luxury, fashion, hospitality, premium goods | Art Deco *(rec.)*, Editorial, Monochromatic, Minimal vintage |
+| Heritage brand, café, nostalgic blog | Retro / vintage *(rec.)*, Minimal vintage, Soft |
+| Music, instruments, tools with a physical metaphor | Skeuomorphic *(rec.)*, Material, Clay |
+| Design-led portfolio, gallery | Monochromatic *(rec.)*, Editorial, Color blocking |
+| Not clear | Minimal *(rec.)*, Flat, Soft, Editorial |
 
 | Name to show | What it feels like | Preset | Watch out for |
 |---|---|---|---|
 | Clean and minimal | Quiet, precise, tool-like. Solid colors, thin borders. | none (the base `tokens.css`) | Becoming bland: keep clear hierarchy and real affordances |
+| Flat | Crisp, bright, direct. Solid color blocks, no shadows or gradients, simple icons. | `styles/flat.css` | Controls with no visible edge: keep 3:1 field boundaries and clear focus rings; avoid a wall of same-weight blocks |
 | Soft and friendly | Warm, approachable. Rounded shapes, gentle shadows, pill buttons. | `styles/soft.css` | Over-rounding dense data screens |
 | Glass | Light, airy, layered. Frosted panels floating over a colorful backdrop. | `styles/glass.css` | Contrast depends on what is behind the panel; GPU cost; use for navigation and controls, not body text |
 | Clay | Playful, puffy, 3-D pastel shapes. | `styles/clay.css` | Eats space; wrong for dense data UI |
 | Bold and raw | Loud, honest, a little rebellious. Thick borders, hard shadows. | `styles/brutalist.css` | Clashing saturated pairs; layout still needs rigorous spacing |
 | Editorial | Structured, confident, typographic. Sharp corners, hairlines, big headings. | `styles/editorial.css` | Feels cold with a weak typeface or no accent |
+| Material | Familiar, systematic, Google-like. Tonal surfaces, large radii, pill buttons, state layers. | `styles/material.css` | Looks generic unless the brand color and type are chosen on purpose |
+| Skeuomorphic | Tactile, realistic. Gradients, bevels, inset highlights, material textures. | `styles/skeuomorphic.css` | Visual weight and contrast on textures; use it only where the metaphor earns its cost |
+| Monochromatic | Unified, sophisticated. One hue in many lightness steps. | `styles/monochrome.css` | Regions blur together; adjacent steps must still differ and control edges stay 3:1 |
+| Color blocking | Energetic, graphic. Large contrasting areas of coordinated color, square corners. | `styles/colorblock.css` | Too many loud blocks side by side; keep to the brand color plus two companions |
+| Retro / vintage | Nostalgic, warm. Cream, brick, mustard and teal, display headings, offset shadows. | `styles/retro.css` | Muted tones fail contrast easily; check body text |
+| Minimal vintage | Timeless, quiet. Paper neutrals, classic serif, hairline rules, one muted accent. | `styles/minimalvintage.css` | Feels precious with a weak serif or low-contrast gray text |
+| Retro-futuristic | Neon, 80s sci-fi. Magenta and cyan on deep violet, glows, grid backdrop. | `styles/retrofuturistic.css` | Neon text on dark is tiring; glow for edges and display type only; honor reduced motion |
+| Art Deco | Luxurious, symmetrical. Gold and navy, uppercase tracked headings, fine rules. | `styles/artdeco.css` | Gold text on cream fails contrast; `--brand-h` does not recolor it |
 
 **Neumorphism isn't on the menu.** Its soft-shadow edges fall far below 3:1 (WCAG 1.4.11). If the user asks for it by name, use it only for decorative accents or non-essential widgets, add visible 3:1 borders, and tell them why. See `visual-styles.md`.
 
@@ -109,13 +126,26 @@ Offer three or four, not all six. Put the recommended one first.
 | Style | Buttons and inputs | Cards | Depth | Type | Density default |
 |---|---|---|---|---|---|
 | Minimal | `rounded-md`, 1px borders | `rounded-xl`, border-led | border-led, minimal shadow | one family, 400/500/600 | default |
+| Flat | `rounded-sm`, solid fills; inputs keep a 2px `border-input` | `rounded-sm`, filled `bg-surface`, no border | none: color and size make hierarchy | bold clear sans, big contrast in size and weight | default |
 | Soft | `rounded-full` buttons, `rounded-lg` inputs | `rounded-2xl` | shadow-led, large soft shadows | friendly humanist or rounded sans | comfortable |
 | Glass | `rounded-xl`, translucent fills | `rounded-2xl`, `.glass` panels | blur + 1px light border, soft shadow | clean sans, medium weights (thin text fails over blur) | default |
 | Clay | `rounded-full`, inner highlights | `rounded-3xl` | inset highlight + soft outer shadow | rounded, heavier weights | comfortable |
 | Bold and raw | `rounded-xs`, 2px black border, hard shadow | `rounded-xs`, `border-2` | hard offset shadows, no blur | heavy grotesque or mono headings | default |
 | Editorial | `rounded-none`, solid fills | no card boxes; hairline rules and space | none, or hairlines | large tight headings, a distinctive typeface | default or compact |
+| Material | `rounded-full` pills, filled or tonal, state layers | `rounded-xl`, tonal `bg-surface` | tonal tint plus a soft shadow | Roboto | default |
+| Skeuomorphic | gradient fills, 1px darker border, inset top highlight | `rounded-lg`, textured or gradient panel | light-based: highlight, shade and a cast shadow | clear sans on flat areas | comfortable |
+| Monochromatic | `rounded-lg`, tonal fills | `rounded-xl`, one-step-lighter tint | lightness steps, minimal shadow | one clean sans | default |
+| Color blocking | `rounded-none`, solid fills | full-width color blocks with `-foreground` text | none: flat contrast | geometric or grotesque sans, bold | default |
+| Retro / vintage | `rounded-sm`, 2px border, offset shadow | `rounded-sm`, 2px border, cream fill | hard offset shadows | display serif headings, humanist body | default |
+| Minimal vintage | `rounded-sm`, 1px border | no box; hairline rules and space | none or a single hairline | classic serif headings, plain sans UI | comfortable |
+| Retro-futuristic | `rounded-xs`, glow border | `rounded-xs`, 1px neon border on dark | glow (colored blur), no gray shadows | geometric display + plain body | default |
+| Art Deco | `rounded-none`, gold rule, chamfered corners | `rounded-none`, double gold rule | fine rules, no blur | uppercase tracked display serif | comfortable |
 
 4. **Still non-negotiable:** contrast, focus rings, 44px touch targets, reduced motion and every rule in `SKILL.md`. A style is paint over the foundations. The glass preset ships its own fallbacks for `prefers-reduced-transparency` and `prefers-contrast`; keep them.
+
+## Choices the user made in the playground
+
+If the project root (or the folder of its tokens file) contains `playground-layout.json`, the user designed their dashboard in the playground. Build it as written: `columns` is the grid size, `kpiStyle` is `plain`, `trend`, `sparkline` or `icon`, and `widgets` is the ordered list (`kpi`, `line`, `bar`, `table`, `activity`, `progress`) with `span` columns each. Colors, fonts, radius and the chosen style are already in the tokens file the playground saved. Don't ask those questions again.
 
 ## Previewing before building
 

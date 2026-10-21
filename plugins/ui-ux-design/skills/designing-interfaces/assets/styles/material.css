@@ -1,0 +1,73 @@
+/*
+  Style preset: material
+  Material: Material Design 3 feel: tonal surfaces, large rounded shapes, pill buttons, state layers, elevation by tint plus a soft shadow. Android-first and Google-ecosystem products.
+
+  How to use: append this file AFTER tokens.css (or merge the values into your own tokens).
+  It redefines every color token for BOTH :root and .dark, because :root and .dark have equal
+  specificity and the later rule wins; a color defined in only one block would leak into the other theme.
+  Check it:  node scripts/check-contrast.mjs assets/tokens.css assets/styles/material.css
+  Fonts (Google Fonts): Roboto or Google Sans-like (Roboto Flex)
+  google-fonts: https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap
+*/
+:root {
+  --radius: 0.75rem;
+  --duration-base: 200ms;
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --shadow-xs: 0 1px 2px hsl(var(--shadow-color) / 0.12);
+  --shadow-sm: 0 1px 3px hsl(var(--shadow-color) / 0.14), 0 1px 2px hsl(var(--shadow-color) / 0.1);
+  --shadow-md: 0 2px 6px hsl(var(--shadow-color) / 0.14), 0 1px 3px hsl(var(--shadow-color) / 0.1);
+}
+:root {
+  --background: oklch(0.985 0.006 var(--brand-h));
+  --foreground: oklch(0.22 0.015 var(--brand-h));
+  --surface: oklch(0.96 0.012 var(--brand-h));
+  --surface-raised: oklch(0.94 0.02 var(--brand-h));
+  --muted: oklch(0.94 0.012 var(--brand-h));
+  --muted-foreground: oklch(0.45 0.02 var(--brand-h));
+  --primary: oklch(0.48 0.15 var(--brand-h));
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.91 0.035 var(--brand-h));
+  --secondary-foreground: oklch(0.28 0.04 var(--brand-h));
+  --accent: oklch(0.9 0.05 var(--brand-h));
+  --accent-foreground: oklch(0.28 0.07 var(--brand-h));
+  --destructive: oklch(0.52 0.21 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.5 0.14 150);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.82 0.16 85);
+  --warning-foreground: oklch(0.22 0.05 70);
+  --info: oklch(0.52 0.15 235);
+  --info-foreground: oklch(0.99 0 0);
+  --border: oklch(0.88 0.015 var(--brand-h));
+  --input: oklch(0.55 0.02 var(--brand-h));
+  --ring: oklch(0.48 0.15 var(--brand-h));
+}
+
+.dark {
+  --background: oklch(0.18 0.01 var(--brand-h));
+  --foreground: oklch(0.94 0.008 var(--brand-h));
+  --surface: oklch(0.22 0.014 var(--brand-h));
+  --surface-raised: oklch(0.27 0.02 var(--brand-h));
+  --muted: oklch(0.25 0.012 var(--brand-h));
+  --muted-foreground: oklch(0.78 0.015 var(--brand-h));
+  --primary: oklch(0.78 0.11 var(--brand-h));
+  --primary-foreground: oklch(0.2 0.04 var(--brand-h));
+  --secondary: oklch(0.32 0.03 var(--brand-h));
+  --secondary-foreground: oklch(0.92 0.02 var(--brand-h));
+  --accent: oklch(0.36 0.05 var(--brand-h));
+  --accent-foreground: oklch(0.92 0.04 var(--brand-h));
+  --destructive: oklch(0.72 0.17 25);
+  --destructive-foreground: oklch(0.16 0.02 25);
+  --success: oklch(0.74 0.15 150);
+  --success-foreground: oklch(0.16 0.02 150);
+  --warning: oklch(0.84 0.15 85);
+  --warning-foreground: oklch(0.2 0.04 70);
+  --info: oklch(0.74 0.12 235);
+  --info-foreground: oklch(0.16 0.02 235);
+  --border: oklch(1 0 0 / 0.12);
+  --input: oklch(0.64 0.02 var(--brand-h));
+  --ring: oklch(0.78 0.11 var(--brand-h));
+}
+
+/* Buttons: rounded-full, 40px tall, filled (primary), tonal (secondary) or outlined. Cards: rounded-xl, tonal bg-surface. Hover and press use a state layer (8% and 12% overlay of the content color), not a darker fill.
+   Icons: Material Symbols (Rounded), filled variant for the active item. */

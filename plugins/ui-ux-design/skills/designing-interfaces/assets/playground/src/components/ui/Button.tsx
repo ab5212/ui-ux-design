@@ -8,7 +8,7 @@ export const buttonVariants = cva(
     "transition-[background-color,color,border-color,transform] duration-(--duration-fast) ease-(--ease-standard)",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
     "active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50",
-    "[&_svg]:size-4 [&_svg]:shrink-0",
+    "[&_.icon]:text-base [&_.icon]:shrink-0",
   ].join(" "),
   {
     variants: {
@@ -23,7 +23,7 @@ export const buttonVariants = cva(
       size: {
         sm: "h-(--control-h-sm) px-3 text-sm",
         md: "h-(--control-h-md) px-4 text-sm",
-        lg: "h-(--control-h-lg) px-6 text-base [&_svg]:size-5",
+        lg: "h-(--control-h-lg) px-6 text-base [&_.icon]:text-xl",
         icon: "size-(--control-h-md) p-0",
         "icon-sm": "size-(--control-h-sm) p-0",
       },

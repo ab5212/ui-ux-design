@@ -1,0 +1,72 @@
+/*
+  Style preset: retro
+  Retro / vintage: nostalgic muted palette (cream, brick, mustard, teal), slab or display headings, thick rules, period-style badges. Brands and blogs with a historical mood.
+
+  How to use: append this file AFTER tokens.css (or merge the values into your own tokens).
+  It redefines every color token for BOTH :root and .dark, because :root and .dark have equal
+  specificity and the later rule wins; a color defined in only one block would leak into the other theme.
+  Check it:  node scripts/check-contrast.mjs assets/tokens.css assets/styles/retro.css
+  Fonts (Google Fonts): DM Serif Display for headings, DM Sans for body
+  google-fonts: https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400..700&display=swap
+*/
+:root {
+  --radius: 0.25rem;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "DM Serif Display", Georgia, serif;
+  --shadow-sm: 2px 2px 0 hsl(var(--shadow-color) / 0.25);
+  --shadow-md: 3px 3px 0 hsl(var(--shadow-color) / 0.25);
+}
+:root {
+  --background: oklch(0.95 0.03 85);
+  --foreground: oklch(0.25 0.04 50);
+  --surface: oklch(0.92 0.04 85);
+  --surface-raised: oklch(0.89 0.05 85);
+  --muted: oklch(0.9 0.035 80);
+  --muted-foreground: oklch(0.42 0.04 55);
+  --primary: oklch(0.47 0.14 35);
+  --primary-foreground: oklch(0.98 0.01 85);
+  --secondary: oklch(0.84 0.12 90);
+  --secondary-foreground: oklch(0.26 0.05 70);
+  --accent: oklch(0.5 0.07 195);
+  --accent-foreground: oklch(0.98 0.01 195);
+  --destructive: oklch(0.52 0.21 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.5 0.14 150);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.82 0.16 85);
+  --warning-foreground: oklch(0.22 0.05 70);
+  --info: oklch(0.52 0.15 235);
+  --info-foreground: oklch(0.99 0 0);
+  --border: oklch(0.25 0.04 50 / 0.35);
+  --input: oklch(0.5 0.06 50);
+  --ring: oklch(0.47 0.14 35);
+}
+
+.dark {
+  --background: oklch(0.2 0.025 55);
+  --foreground: oklch(0.93 0.03 85);
+  --surface: oklch(0.25 0.03 55);
+  --surface-raised: oklch(0.29 0.035 55);
+  --muted: oklch(0.27 0.03 55);
+  --muted-foreground: oklch(0.78 0.04 80);
+  --primary: oklch(0.72 0.13 40);
+  --primary-foreground: oklch(0.2 0.03 40);
+  --secondary: oklch(0.8 0.12 90);
+  --secondary-foreground: oklch(0.22 0.04 70);
+  --accent: oklch(0.72 0.08 195);
+  --accent-foreground: oklch(0.18 0.03 195);
+  --destructive: oklch(0.72 0.17 25);
+  --destructive-foreground: oklch(0.16 0.02 25);
+  --success: oklch(0.74 0.15 150);
+  --success-foreground: oklch(0.16 0.02 150);
+  --warning: oklch(0.84 0.15 85);
+  --warning-foreground: oklch(0.2 0.04 70);
+  --info: oklch(0.74 0.12 235);
+  --info-foreground: oklch(0.16 0.02 235);
+  --border: oklch(0.93 0.03 85 / 0.22);
+  --input: oklch(0.65 0.05 70);
+  --ring: oklch(0.72 0.13 40);
+}
+
+/* Headings: font-family: var(--font-display). Use 2px solid borders (border-border) and offset shadows, like old print. Keep body at 16px+ with real contrast; muted vintage tones fail easily. */
+h1, h2, h3 { font-family: var(--font-display, inherit); font-weight: 400; }

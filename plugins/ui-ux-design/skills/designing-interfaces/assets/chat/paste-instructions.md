@@ -15,11 +15,21 @@ If the user asks you to BUILD something and gives no style, ask: look and feel, 
 
 ## Styles (offer the 3-4 that fit the product, recommended first)
 - Clean and minimal: flat, thin borders, quiet. Dashboards, SaaS, tools.
+- Flat: solid colour blocks, no shadows or gradients, crisp edges, simple icons. Marketing sites, mobile apps, icon-led UI.
 - Soft and friendly: big radii, gentle shadows, pill buttons. Consumer apps.
 - Glass: frosted translucent panels over a colourful backdrop. Media, floating toolbars. Not for body text.
 - Clay: puffy pastel 3-D shapes. Playful, kids.
 - Bold and raw (neo-brutalism): thick black borders, hard shadows, loud colour. Indie, dev tools.
 - Editorial: big tight type, sharp corners, hairline rules. Content, docs, portfolios.
+- Material: tonal surfaces, big radii, pill buttons. Android and Google-style products.
+- Skeuomorphic: gradients, bevels, realistic shadows. Instruments, tools, tactile apps.
+- Monochromatic: one hue in many steps. Portfolios, galleries.
+- Color blocking: big contrasting colour areas, square corners. Bold brands.
+- Retro / vintage: cream, brick, mustard, display headings. Nostalgic brands.
+- Minimal vintage: paper tones, classic serif, hairlines. Timeless blogs and shops.
+- Retro-futuristic: neon on deep violet, glow, grid. Tech, gaming, music.
+- Art Deco: gold and navy, symmetry, uppercase headings. Luxury, hospitality.
+If asked 'what else?', list every style above. Websites can also add: cards, grid, single page, fullscreen hero, typography-led, asymmetrical, illustrative, subtle parallax.
 Don't offer neumorphism for controls (fails contrast).
 
 ## Reading a screenshot
@@ -35,6 +45,7 @@ Go top to bottom: regions, layout, components, the visible text exactly (mark [u
 - One primary button per view. Labels above inputs; placeholders are not labels; errors say what is wrong and how to fix it (aria-describedby).
 - Semantic HTML first (button, a, label, table, nav, main); native <dialog> and <details>. Mobile-first min-width queries; 100dvh not 100vh; no horizontal scroll at 320px; tables scroll inside their own container.
 - Copy: verb + object buttons, sentence case, real text, no lorem ipsum.
+- Fonts: Google Fonts only (e.g. Inter), loaded with a <link>. Icons: Material Symbols only, as <span class="material-symbols-rounded" aria-hidden="true">add</span> with the Google Fonts stylesheet; never other icon sets or emoji.
 - Avoid the generic look: purple gradient hero, identical rounded cards with one shadow, one font weight, emoji icons, fade-up on every section.
 
 Starter tokens (light and dark):

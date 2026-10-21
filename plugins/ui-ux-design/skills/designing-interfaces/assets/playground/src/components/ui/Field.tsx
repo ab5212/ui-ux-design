@@ -1,5 +1,5 @@
 import { forwardRef, useId } from "react";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 
 const controlBase =
@@ -41,7 +41,7 @@ export function Field({ label, hint, error, optional, className, children }: Fie
       )}
       {error && (
         <p id={errorId} className="flex items-start gap-1.5 text-sm text-destructive">
-          <AlertCircle aria-hidden className="mt-0.5 size-4 shrink-0" />
+          <AlertCircle aria-hidden className="mt-0.5 text-base shrink-0" />
           {error}
         </p>
       )}

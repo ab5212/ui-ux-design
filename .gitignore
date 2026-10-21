@@ -1,3 +1,5 @@
 node_modules/
 dist/
 .DS_Store
+# local playground dev copy of the style presets (scaffold-playground.sh copies them into user projects)
+plugins/ui-ux-design/skills/designing-interfaces/assets/playground/src/styles/presets/

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "@/components/ui/icons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { Accordion } from "@/components/ui/Accordion";
 import { Badge } from "@/components/ui/Display";
@@ -65,7 +65,7 @@ export function NavigationDemo() {
               onClick={() => setPage((p) => p - 1)}
               className="inline-flex h-9 items-center gap-1 rounded-md px-3 text-sm hover:bg-accent disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-ring"
             >
-              <ChevronLeft aria-hidden className="size-4" /> Previous
+              <ChevronLeft aria-hidden className="text-base" /> Previous
             </button>
             {pages.map((p, i) => (
               <span key={p} className="contents">
@@ -91,7 +91,7 @@ export function NavigationDemo() {
               onClick={() => setPage((p) => p + 1)}
               className="inline-flex h-9 items-center gap-1 rounded-md px-3 text-sm hover:bg-accent disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-ring"
             >
-              Next <ChevronRight aria-hidden className="size-4" />
+              Next <ChevronRight aria-hidden className="text-base" />
             </button>
           </nav>
         </div>

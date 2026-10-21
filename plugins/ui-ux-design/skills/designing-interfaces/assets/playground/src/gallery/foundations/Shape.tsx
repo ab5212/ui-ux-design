@@ -1,25 +1,29 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { tokenPx, useTokenTick } from "@/lib/useTokenTick";
 import { Demo } from "../Section";
 import { Button } from "@/components/ui/Button";
 
 const SPACING = [2, 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96];
 // Full class names so Tailwind's scanner finds them (never build class names from strings).
+// [class, multiple of --radius]; the multiples mirror the @theme block in tokens.css.
 const RADII = [
-  ["rounded-xs", "rounded-xs"], ["rounded-sm", "rounded-sm"], ["rounded-md", "rounded-md"], ["rounded-lg", "rounded-lg"],
-  ["rounded-xl", "rounded-xl"], ["rounded-2xl", "rounded-2xl"], ["rounded-3xl", "rounded-3xl"], ["rounded-full", "rounded-full"],
+  ["rounded-xs", 0.25], ["rounded-sm", 0.5], ["rounded-md", 0.75], ["rounded-lg", 1],
+  ["rounded-xl", 1.5], ["rounded-2xl", 2], ["rounded-3xl", 3], ["rounded-full", 0],
 ] as const;
 const SHADOWS = [
   ["shadow-xs", "inputs"], ["shadow-sm", "cards"], ["shadow-md", "menus"], ["shadow-lg", "drawers"], ["shadow-xl", "dialogs"],
 ] as const;
 
 export function SpacingFoundation() {
+  useTokenTick();
+  const unit = tokenPx("--spacing"); // follows the Spacing control
   return (
     <Demo title="Spacing scale" note="4px base. Space inside a group is smaller than space between groups.">
       <div className="grid gap-2">
         {SPACING.map((px) => (
           <div key={px} className="grid grid-cols-[3rem_1fr] items-center gap-4 text-sm">
-            <span className="tabular-nums text-muted-foreground">{px}</span>
-            <div className="h-3 rounded-xs bg-primary" style={{ width: px }} />
+            <span className="tabular-nums text-muted-foreground">{Math.round((px / 4) * unit)}</span>
+            <div className="h-3 rounded-xs bg-primary" style={{ width: `calc(var(--spacing) * ${px / 4})` }} />
           </div>
         ))}
       </div>
@@ -40,17 +44,22 @@ function Slider({ label, value, min, max, onChange }: { label: string; value: nu
 }
 
 export function RadiusFoundation() {
-  const [inner, setInner] = useState(12);
+  useTokenTick();
+  const base = Math.round(tokenPx("--radius")); // follows the Corners control and the active style
+  const [override, setOverride] = useState<number | null>(null);
+  useEffect(() => setOverride(null), [base]); // a new radius token resets the manual slider
+  const inner = override ?? base;
+  const setInner = setOverride;
   const [pad, setPad] = useState(10);
   const outer = inner + pad;
   return (
     <>
-      <Demo title="Radius scale" note="All values derive from one --radius. Change the radius preset in the toolbar.">
+      <Demo title="Radius scale" note={`All values derive from one --radius (now ${base}px). Change Corners or the Style in the panel.`}>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8">
-          {RADII.map(([cls, label]) => (
+          {RADII.map(([cls, mult]) => (
             <div key={cls} className="grid justify-items-center gap-2">
               <div className={`size-16 border-2 border-primary bg-accent ${cls}`} />
-              <code className="text-xs">{label}</code>
+              <code className="text-xs">{cls} · {mult ? `${Math.round(base * mult)}px` : "full"}</code>
             </div>
           ))}
         </div>
@@ -58,7 +67,8 @@ export function RadiusFoundation() {
       <Demo title="Nested (concentric) radius" note="outer = inner + padding. The wrong version reuses the inner radius.">
         <div className="grid gap-8 lg:grid-cols-[18rem_1fr]">
           <div className="grid content-start gap-4">
-            <Slider label="Inner radius" value={inner} min={0} max={24} onChange={setInner} />
+            <Slider label="Inner radius" value={inner} min={0} max={Math.max(24, base * 2)} onChange={setInner} />
+            {override !== null && <button type="button" onClick={() => setOverride(null)} className="justify-self-start text-xs font-medium text-primary hover:underline">Follow the radius token ({base}px)</button>}
             <Slider label="Padding" value={pad} min={2} max={32} onChange={setPad} />
             <p className="text-sm">
               Outer radius = <strong className="tabular-nums">{inner} + {pad} = {outer}px</strong>

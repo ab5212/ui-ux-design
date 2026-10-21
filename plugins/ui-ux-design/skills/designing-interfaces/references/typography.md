@@ -104,7 +104,7 @@ One variable font file often costs less than three static weights. Use intermedi
 
 ### Loading without layout shift
 
-- Self-host fonts (`@fontsource` packages or files in `/public`). Third-party font hosts add a connection and privacy questions.
+- Use Google Fonts (see `references/icons-fonts.md`). Add `preconnect` hints, or self-host the same files downloaded from fonts.google.com for privacy or offline use.
 - Use `font-display: swap` and preload the one or two files above the fold.
 - Reduce the jump when the web font replaces the fallback by tuning the fallback with `size-adjust`, `ascent-override` and `descent-override`. Next.js `next/font` and Fontaine do this automatically.
 - Subset to the scripts you actually ship.

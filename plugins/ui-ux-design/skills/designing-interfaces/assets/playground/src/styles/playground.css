@@ -47,3 +47,14 @@ html { scroll-padding-top: 5rem; }
   animation: shimmer 1.8s linear infinite;
 }
 @media (prefers-reduced-motion: reduce) { .skeleton-shimmer { animation: none; } }
+
+/* Border width control: Tailwind's `border` utility is a fixed 1px, so follow --border-w here.
+   shortcut: only the `border` class, not border-t/b/l/r; use var(--border-w) in your own components. */
+[class~="border"] { border-width: var(--border-w); }
+
+/* Material Symbols glyph: sized by font-size, one em square, never shrinks */
+.icon { font-size: 1.25rem; width: 1em; height: 1em; line-height: 1; overflow: hidden; flex-shrink: 0; user-select: none; }
+
+/* Hue slider: rainbow track, round white-ringed thumb */
+.hue-range::-webkit-slider-thumb { appearance: none; width: 1.25rem; height: 1.25rem; border-radius: 9999px; background: var(--primary); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--input), var(--shadow-sm); }
+.hue-range::-moz-range-thumb { width: 1.25rem; height: 1.25rem; border-radius: 9999px; background: var(--primary); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--input); }

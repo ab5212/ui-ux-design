@@ -1,5 +1,5 @@
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "@/components/ui/icons";
 
 /** Header is a real button inside a heading; chevron rotates; multiple items can be open. */
 export function Accordion({ items }: { items: { id: string; title: string; content: React.ReactNode }[] }) {

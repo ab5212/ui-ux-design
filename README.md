@@ -89,7 +89,7 @@ bash plugins/ui-ux-design/skills/designing-interfaces/scripts/build-chat-package
 
 Upload `designing-interfaces-chat.zip` as a custom skill in ChatGPT, Claude.ai or the Gemini app.
 
-For a **Custom GPT, Gem, Claude Project** or any product with an instructions field and no skill upload, paste the contents of `plugins/ui-ux-design/skills/designing-interfaces/assets/chat/paste-instructions.md` (about 5,800 characters).
+For a **Custom GPT, Gem, Claude Project** or any product with an instructions field and no skill upload, paste the contents of `plugins/ui-ux-design/skills/designing-interfaces/assets/chat/paste-instructions.md` (about 7,000 characters).
 
 Then send a screenshot. It asks what you want before generating anything.
 
@@ -110,7 +110,7 @@ Which should I apply? "1,2,3", "all of A", "all blockers", "everything", or "non
 
 **You ask for something new with no style.** It asks one short message: look and feel (only styles that fit your product), brand color, main device, and output technology if there is no project. Your answer is applied as a token preset and saved to `DESIGN.md`, so later sessions don't ask again. It skips the questions when `DESIGN.md` exists, you already named a style, the project already has a design language, or the change is small. In a headless run it picks the recommended default, marks it as assumed, and says how to change it.
 
-Styles: clean and minimal (the base tokens), soft and friendly, glass, clay, bold and raw (neo-brutalism), editorial. Neumorphism is deliberately not offered for controls because its edges fail contrast.
+Styles: clean and minimal (the base tokens), flat, material, soft and friendly, glass, clay, skeuomorphic, bold and raw (neo-brutalism), editorial, monochromatic, color blocking, retro / vintage, minimal vintage, retro-futuristic and art deco. Websites can also add layout techniques (cards, grid, single page, fullscreen hero, typography-led, asymmetrical, illustrative, parallax). Neumorphism is deliberately not offered for controls because its edges fail contrast.
 
 ## Output technologies
 
@@ -141,7 +141,7 @@ plugins/ui-ux-design/
     │   ├── tokens.css                     # Tailwind v4 tokens, light + dark OKLCH
     │   ├── tokens.plain.css               # the same tokens for any stack, no build step
     │   ├── plain/                         # components.css + example.html (plain HTML + CSS kit)
-    │   ├── styles/                        # soft, glass, clay, brutalist, editorial presets
+    │   ├── styles/                        # 14 style presets (flat, material, soft, glass, clay, ...)
     │   ├── chat/                          # chat-edition SKILL.md and the single-paste instructions
     │   └── playground/                    # Vite + React + TypeScript + Tailwind v4 + Radix gallery
     └── scripts/
@@ -178,7 +178,15 @@ bash plugins/ui-ux-design/skills/designing-interfaces/scripts/scaffold-playgroun
 cd ui-playground && npm run dev        # http://localhost:5173
 ```
 
-The playground shows every foundation and component in all states, with theme, density, radius, brand hue and reduced-motion toggles, live contrast scores, and a viewport preview at 360, 768, 1024, 1440 and 1920px.
+The playground shows every foundation and component in all states, with theme, density, radius, brand hue, border, shadow, font, text size, spacing and reduced-motion controls, live contrast scores, and a viewport preview at 360, 768, 1024, 1440 and 1920px.
+
+**Edit any color or font.** The Colors group lists every semantic color with pickers for the fill and its text color, live contrast ratios and a per-color reset. Change a fill and the text color switches to white or near-black if the pair drops below 4.5:1. The Font box accepts any Google Font. Colors are edited per theme (light or dark).
+
+**Preview your own app.** Choose **Your app** in the header, enter your dev-server address and add one line to your app's `<head>` while previewing (the playground shows it): `<script src="http://localhost:5173/bridge.js"></script>`. Every color, font and style change then appears in your real pages live. It works when the app uses this skill's color variables, it is dev-only, and the bridge accepts messages only from the playground that served it.
+
+**Dashboard builder.** Pick the grid size (2, 3, 4 or 6 columns), the KPI card style (number, trend, sparkline, icon), then add, drag, reorder, widen and remove widgets (KPI, line chart, bar chart, table, activity, progress). **Save to code** writes `playground-layout.json` next to the tokens file, and the skill builds your dashboard from it.
+
+**Style picker.** The Customize panel starts with a "Look and feel" dropdown listing all 14 presets, so a user can compare styles live. **Save to code** writes the chosen preset and any controls changed on top of it into `src/styles/tokens.css` as a `playground:start` / `playground:end` block of CSS variables. Vite reloads, so an app that imports that file updates live. To update your own tokens file instead, start with `PLAYGROUND_TOKENS=path/to/tokens.css npm run dev`. Dev server only. Components follow `--border-w` only if they use it.
 
 ## Sources
 
@@ -191,7 +199,7 @@ Keep `SKILL.md` under 500 lines and references focused on one topic, with concre
 ```bash
 S=plugins/ui-ux-design/skills/designing-interfaces
 claude plugin validate . && claude plugin validate ./plugins/ui-ux-design --strict
-for st in soft glass clay brutalist editorial; do node $S/scripts/check-contrast.mjs $S/assets/tokens.css $S/assets/styles/$st.css || break; done
+for st in $(ls $S/assets/styles | sed 's/\.css$//'); do node $S/scripts/check-contrast.mjs $S/assets/tokens.css $S/assets/styles/$st.css || break; done
 node $S/scripts/check-contrast.mjs $S/assets/tokens.plain.css
 bash $S/scripts/build-chat-package.sh ./dist
 ```

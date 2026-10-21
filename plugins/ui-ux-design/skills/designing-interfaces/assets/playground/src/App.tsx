@@ -1,4 +1,5 @@
-import { SlidersHorizontal } from "lucide-react";
+import { useEffect, useState } from "react";
+import { SlidersHorizontal } from "@/components/ui/icons";
 import { useSettings } from "@/lib/settings";
 import { TooltipProvider } from "@/components/ui/Tooltip";
 import { ToastProvider } from "@/components/ui/Display";
@@ -6,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/Dialog";
 import { Section } from "@/gallery/Section";
 import { Toolbar } from "@/gallery/Toolbar";
+import { AppPreview } from "@/gallery/AppPreview";
 import { ResponsivePreview } from "@/gallery/ResponsivePreview";
 import { ColorFoundation } from "@/gallery/foundations/Color";
 import { TypeFoundation } from "@/gallery/foundations/Type";
@@ -14,18 +16,28 @@ import { ButtonsDemo } from "@/gallery/sections/Actions";
 import { FormsDemo } from "@/gallery/sections/Forms";
 import { OverlaysDemo } from "@/gallery/sections/Overlays";
 import { NavigationDemo } from "@/gallery/sections/Navigation";
+import { DashboardBuilder } from "@/gallery/sections/Dashboard";
 import { DataDemo, FeedbackDemo } from "@/gallery/sections/Data";
 import SampleLayout from "@/frames/SampleLayout";
 
 const SECTIONS = [
   { group: "Foundations", items: [["color", "Color"], ["type", "Typography"], ["spacing", "Spacing"], ["radius", "Radius"], ["elevation", "Elevation"], ["motion", "Motion"]] },
   { group: "Components", items: [["buttons", "Buttons and menus"], ["forms", "Forms"], ["overlays", "Dialogs and alerts"], ["navigation", "Navigation"], ["data", "Data display"], ["feedback", "Loading and empty"]] },
-  { group: "Layout", items: [["responsive", "Responsive"]] },
+  { group: "Layout", items: [["dashboard", "Dashboard builder"], ["responsive", "Responsive"]] },
 ] as const;
 
 export default function App() {
   const isFrame = new URLSearchParams(location.search).get("frame") === "layout";
   const [settings, update] = useSettings(!isFrame);
+  const [active, setActive] = useState("color");
+  const [view, setView] = useState<"playground" | "app">("playground");
+
+  useEffect(() => {
+    const ids = SECTIONS.flatMap((g) => g.items.map(([id]) => id as string));
+    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && setActive(e.target.id)), { rootMargin: "-20% 0px -70% 0px" });
+    ids.forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el); });
+    return () => io.disconnect();
+  }, [isFrame]);
 
   if (isFrame) return <SampleLayout />;
 
@@ -36,48 +48,52 @@ export default function App() {
           Skip to content
         </a>
 
-        <header className="sticky top-0 z-(--z-sticky) border-b bg-background/90 backdrop-blur">
-          <div className="mx-auto flex h-14 max-w-[1400px] items-center gap-4 px-4 sm:px-6">
-            <p className="flex items-center gap-2 font-semibold">
-              <span aria-hidden className="grid size-6 place-items-center rounded-md bg-primary">
-                <span className="size-3 rounded-[3px] bg-primary-foreground" />
+        <header className="sticky top-0 z-(--z-sticky) border-b bg-background/85 backdrop-blur">
+          <div className="mx-auto flex h-14 max-w-[1680px] items-center gap-4 px-4 sm:px-6">
+            <p className="flex items-center gap-2.5 font-semibold tracking-tight">
+              <span aria-hidden className="grid size-7 place-items-center rounded-lg bg-primary text-primary-foreground">
+                <span className="icon material-symbols-rounded text-base">palette</span>
               </span>
               UI Playground
             </p>
-            <span className="hidden text-sm text-muted-foreground md:inline">Tokens and components from the designing-interfaces skill</span>
+            <div role="radiogroup" aria-label="Preview" className="ms-4 inline-flex gap-1 rounded-lg bg-muted p-1">
+              {([["playground", "Playground"], ["app", "Your app"]] as const).map(([v, label]) => (
+                <button key={v} type="button" role="radio" aria-checked={view === v} onClick={() => setView(v)}
+                  className={`h-8 rounded-md px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring ${view === v ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                  {label}
+                </button>
+              ))}
+            </div>
             <div className="ms-auto xl:hidden">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm"><SlidersHorizontal aria-hidden /> Display settings</Button>
+                  <Button variant="outline" size="sm"><SlidersHorizontal aria-hidden /> Customize</Button>
                 </DialogTrigger>
-                <DialogContent title="Display settings" description="Applies to the whole playground and the viewport preview.">
-                  <Toolbar settings={settings} update={update} className="flex-col items-start" />
+                <DialogContent title="Customize" description="Applies to the whole playground and the viewport preview.">
+                  <Toolbar settings={settings} update={update} />
                 </DialogContent>
               </Dialog>
             </div>
           </div>
-          <div className="hidden border-t xl:block">
-            <Toolbar settings={settings} update={update} className="mx-auto max-w-[1400px] px-6 py-3" />
-          </div>
         </header>
 
-        <div className="mx-auto flex max-w-[1400px] gap-10 px-4 sm:px-6">
-          <nav aria-label="Sections" className="sticky top-36 hidden h-[calc(100dvh-10rem)] w-52 shrink-0 overflow-y-auto py-8 lg:block">
+        <div className="mx-auto flex max-w-[1680px] gap-8 px-4 sm:px-6">
+          {view === "playground" && <nav aria-label="Sections" className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-52 shrink-0 overflow-y-auto py-8 lg:block">
             {SECTIONS.map((g) => (
               <div key={g.group} className="mb-6">
-                <p className="mb-2 px-2 text-sm font-semibold">{g.group}</p>
+                <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-foreground/70">{g.group}</p>
                 <ul className="grid gap-0.5">
                   {g.items.map(([id, label]) => (
                     <li key={id}>
-                      <a href={`#${id}`} className="block rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground">{label}</a>
+                      <a href={`#${id}`} aria-current={active === id ? "true" : undefined} className="block rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground aria-[current]:bg-primary/10 aria-[current]:font-medium aria-[current]:text-primary">{label}</a>
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
-          </nav>
+          </nav>}
 
-          <main id="main" className="min-w-0 flex-1 pb-24 pt-6">
+          {view === "app" ? <AppPreview settings={settings} /> : <main id="main" className="min-w-0 flex-1 pb-24 pt-6">
             <div className="mb-6 lg:hidden">
               <label htmlFor="jump" className="sr-only">Jump to section</label>
               <select id="jump" className="h-10 w-full rounded-md border border-input bg-surface px-3 text-base"
@@ -123,10 +139,18 @@ export default function App() {
             <Section id="feedback" title="Loading and empty states" intro="Feedback that matches the wait, and empty states that point to the next step.">
               <FeedbackDemo />
             </Section>
+            <Section id="dashboard" title="Dashboard builder" intro="Choose how KPI cards, charts and tables are laid out: grid size, card style, which widgets, their order and width. They use your colors, radius and fonts.">
+              <DashboardBuilder />
+            </Section>
             <Section id="responsive" title="Responsive" intro="The same sample app at five real viewport widths, using your current theme, density, radius and hue.">
               <ResponsivePreview settings={settings} />
             </Section>
-          </main>
+          </main>}
+
+          <aside aria-label="Customize" className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-72 shrink-0 overflow-y-auto border-s bg-surface px-5 py-6 xl:block">
+            <h2 className="mb-5 text-base font-semibold">Customize</h2>
+            <Toolbar settings={settings} update={update} className="min-h-[calc(100%-2.75rem)]" />
+          </aside>
         </div>
       </ToastProvider>
     </TooltipProvider>

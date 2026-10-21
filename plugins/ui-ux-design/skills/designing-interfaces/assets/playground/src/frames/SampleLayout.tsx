@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BarChart3, Bell, FileText, Home, Menu, Plus, Settings, Users, X } from "lucide-react";
+import { BarChart3, Bell, FileText, Home, Menu, Plus, Settings, Users, X } from "@/components/ui/icons";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Display";
 import { cn } from "@/lib/cn";
@@ -60,7 +60,7 @@ export default function SampleLayout() {
             <n.icon aria-hidden className="size-4" /> {n.label}
           </a>
         ))}
-        <a href="#" className="mt-auto flex h-9 items-center gap-2 rounded-md px-2 text-sm text-muted-foreground hover:bg-muted"><Settings aria-hidden className="size-4" /> Settings</a>
+        <a href="#" className="mt-auto flex h-9 items-center gap-2 rounded-md px-2 text-sm text-muted-foreground hover:bg-muted"><Settings aria-hidden className="text-base" /> Settings</a>
       </nav>
 
       <div className="flex min-w-0 flex-1 flex-col">
