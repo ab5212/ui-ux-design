@@ -96,7 +96,7 @@
         return () => c.remove();
       }
       case "group": {
-        const els = s.targets.map($).filter(Boolean); if (!els.length) return null;
+        const els = s.targets.map($).filter(Boolean).sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1)); if (!els.length) return null;
         const p = els[0].parentElement, same = els.filter((e) => e.parentElement === p);
         const prev = same.map((e) => ({ e, i: indexIn(e) })), at = Math.min(...prev.map((x) => x.i));
         const g = document.createElement("div"); g.setAttribute("data-pg-group", "");
@@ -225,6 +225,7 @@
       text: ownText(el).slice(0, 60), styles, container: isContainer(el), childCount: el.childElementCount,
       index: el.parentElement ? indexIn(el) : 0, siblings: el.parentElement ? kids(el.parentElement).length : 1,
       icon: isIcon(el), group: el.hasAttribute("data-pg-group"), multi: multi.length,
+      selectors: multi.map(selectorFor), multiIds: multi.map(idOf), groupable: multi.every((m) => m.parentElement === multi[0].parentElement),
       kebab: isKebab || !!kebab,
       items: isKebab ? [...el.querySelectorAll("ul > li")].map((li) => ({ label: li.textContent.replace(li.querySelector("span")?.textContent ?? "", "").trim(), icon: li.querySelector("span")?.textContent.trim() ?? "" })) : null,
     };
@@ -362,8 +363,8 @@
     if (e.key === "Escape") { choose(null); return; }
     if (!selected && !(mod && k === "z")) return;
     let handled = true;
-    if (e.key === "Delete" || e.key === "Backspace") del(selected);
-    else if (mod && k === "d") dup(selected);
+    if (e.key === "Delete" || e.key === "Backspace") [...(multi.length ? multi : [selected])].forEach(del);
+    else if (mod && k === "d") [...(multi.length ? multi : [selected])].forEach(dup);
     else if (mod && k === "g") (e.shiftKey ? ungroup(selected) : group(multi, "column"));
     else if (mod && k === "z") (e.shiftKey ? redo() : undo());
     else if (mod && k === "y") redo();
@@ -386,12 +387,12 @@
     }
     if (m.type === "playground:do") {
       const c = m.cmd, el = m.id != null ? byId(m.id) : selected;
-      if (c === "select") choose(el);
+      if (c === "select") choose(el, !!m.add);
       else if (c === "tree") send({ type: "playground:tree", nodes: tree() });
       else if (c === "up") el && moveBy(el, -1);
       else if (c === "down") el && moveBy(el, 1);
-      else if (c === "duplicate") dup(el);
-      else if (c === "delete") del(el);
+      else if (c === "duplicate") (multi.length > 1 ? [...multi] : [el]).forEach(dup);
+      else if (c === "delete") (multi.length > 1 && multi.includes(el) ? [...multi] : [el]).forEach(del);
       else if (c === "group") group(multi.length ? multi : el ? [el] : [], m.layout);
       else if (c === "ungroup") ungroup(el);
       else if (c === "insert") insert(m.html, m.kind, m.where);

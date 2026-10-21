@@ -170,7 +170,7 @@ export default function App() {
             ) : <h2 className="mb-5 text-base font-semibold">Customize</h2>}
             {view === "app" && panel === "element"
               ? <ElementPanel selection={selection} edits={edits} set={setEdit} clear={clearEdits} />
-              : view === "app" && panel === "layers" ? <LayersPanel tree={tree} selected={selection?.id ?? null} />
+              : view === "app" && panel === "layers" ? <LayersPanel tree={tree} selected={selection?.multiIds ?? []} />
               : view === "app" && panel === "insert" ? <InsertPanel selection={selection} />
               : <Toolbar settings={settings} update={update} footer={false} />}
             <SaveBar settings={settings} />

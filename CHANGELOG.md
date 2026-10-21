@@ -2,6 +2,9 @@
 
 Bump `version` in **both** plugin manifests for every release; users only receive updates when it changes.
 
+## 1.5.1
+- Playground: with several elements selected (Shift+click on the canvas or in Layers), every Element control (radius, color, size, padding, shadow, layout…) applies to all of them, Delete and Duplicate act on the whole selection, and Group keeps page order and is disabled when the elements are in different containers.
+
 ## 1.5.0
 - Playground **Layers**, **Insert** and arrange tools for the running app: layers tree with drag to reorder or move inside, canvas drag with a drop line, resize handles, move up/down, duplicate, delete, group and ungroup, in-place text editing, multi-select, container layout controls, undo and redo, and replay after reload. An Insert library (text, button, icon picker, image, badge, avatar, row, column, card, form fields, tabs, breadcrumb, kebab menu with editable items, KPI card, table, lists and 11 chart types).
 - Structural changes are saved as an ordered change list in `playground-changes.json`; new `references/playground-changes.md` tells the skill how to apply them to source after approval.

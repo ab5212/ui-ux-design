@@ -5,6 +5,7 @@ export type Edits = Record<string, Record<string, string>>;
 export interface Selection {
   id: number; selector: string; similar: string | null; similarCount: number; tag: string; label: string; text: string; styles: Record<string, string>;
   container: boolean; childCount: number; index: number; siblings: number; icon: boolean; group: boolean; multi: number; kebab: boolean;
+  selectors: string[]; multiIds: number[]; groupable: boolean;
   items: { label: string; icon: string }[] | null;
 }
 export interface TreeNode { id: number; tag: string; name: string; text: string; hidden: boolean; children: TreeNode[] }

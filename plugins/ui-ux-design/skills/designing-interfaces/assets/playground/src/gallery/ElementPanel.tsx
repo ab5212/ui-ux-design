@@ -101,9 +101,12 @@ export function ElementPanel({ selection, edits, set, clear }: {
     );
   }
   const s = selection.styles;
-  const target = all && selection.similar ? selection.similar : selection.selector;
+  const many = selection.multi > 1 ? selection.selectors : null;
+  const targets = many ?? [all && selection.similar ? selection.similar : selection.selector];
+  const target = targets[targets.length - 1]; // the element whose current values the controls show
   const own = edits[target] ?? {};
-  const put = (prop: string, value: string | null) => set(target, prop, value);
+  // every control changes all selected elements at once
+  const put = (prop: string, value: string | null) => targets.forEach((t) => set(t, prop, value));
   const val = (prop: string, live: string) => own[prop] ?? live;
   const weight = String(Math.round((parseInt(val("font-weight", s["font-weight"])) || 400) / 100) * 100);
   const align = val("text-align", s["text-align"]);
@@ -115,13 +118,13 @@ export function ElementPanel({ selection, edits, set, clear }: {
   return (
     <div className="grid min-w-0 grid-cols-1 gap-6">
       <div className="min-w-0">
-        <p className="text-sm font-semibold">{selection.label}</p>
-        {selection.text && <p className="truncate text-xs text-muted-foreground">“{selection.text}”</p>}
+        <p className="text-sm font-semibold">{many ? `${many.length} elements selected` : selection.label}</p>
+        {!many && selection.text && <p className="truncate text-xs text-muted-foreground">“{selection.text}”</p>}
         <button type="button" onClick={() => dispatchEvent(new Event("playground:select-parent"))} className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
           <span aria-hidden className="icon material-symbols-rounded text-base">north_west</span>Select parent
         </button>
         <code className="mt-1 block truncate font-mono text-xs text-muted-foreground" title={target}>{target}</code>
-        {selection.similar && selection.similarCount > 1 && (
+        {!many && selection.similar && selection.similarCount > 1 && (
           <label className="mt-2 flex items-center gap-2 text-sm"><input type="checkbox" checked={all} onChange={(e) => setAll(e.target.checked)} className="size-4 accent-(--primary)" />
             Apply to all {selection.similarCount} similar ({selection.similar})</label>
         )}
@@ -131,12 +134,12 @@ export function ElementPanel({ selection, edits, set, clear }: {
         <Act icon="arrow_upward" label="Move up (Alt+↑)" disabled={selection.index === 0} onClick={() => cmd({ cmd: "up" })} />
         <Act icon="arrow_downward" label="Move down (Alt+↓)" disabled={selection.index >= selection.siblings - 1} onClick={() => cmd({ cmd: "down" })} />
         <Act icon="content_copy" label="Duplicate (Ctrl+D)" onClick={() => cmd({ cmd: "duplicate" })} />
-        <Act icon="view_column" label="Group in a row (Ctrl+G)" onClick={() => cmd({ cmd: "group", layout: "row" })} />
-        <Act icon="view_agenda" label="Group in a column" onClick={() => cmd({ cmd: "group", layout: "column" })} />
+        <Act icon="view_column" label="Group in a row (Ctrl+G)" disabled={!selection.groupable} onClick={() => cmd({ cmd: "group", layout: "row" })} />
+        <Act icon="view_agenda" label="Group in a column" disabled={!selection.groupable} onClick={() => cmd({ cmd: "group", layout: "column" })} />
         <Act icon="ungroup" label="Ungroup (Ctrl+Shift+G)" disabled={!selection.childCount} onClick={() => cmd({ cmd: "ungroup" })} />
         <Act icon="delete" label="Delete (Del)" danger onClick={() => cmd({ cmd: "delete" })} />
       </div>
-      {selection.multi > 1 && <p className="text-xs text-muted-foreground">{selection.multi} selected (Shift+click). Group wraps them together.</p>}
+      {many && <p className="text-xs text-muted-foreground">Every change below applies to all {many.length} selected elements. Controls show the values of the last one you clicked.{!selection.groupable && " Group needs elements in the same container."}</p>}
 
       {(selection.text || selection.icon) && !selection.icon && <ContentField sel={selection} />}
       {selection.icon && (
@@ -196,7 +199,7 @@ export function ElementPanel({ selection, edits, set, clear }: {
       </Group>
 
       <div className="flex items-center gap-4 text-sm">
-        <button type="button" disabled={!edits[target]} onClick={() => clear(target)} className="font-medium text-primary hover:underline disabled:text-muted-foreground disabled:no-underline">Reset this element</button>
+        <button type="button" disabled={!targets.some((t) => edits[t])} onClick={() => targets.forEach((t) => clear(t))} className="font-medium text-primary hover:underline disabled:text-muted-foreground disabled:no-underline">{many ? "Reset these elements" : "Reset this element"}</button>
         {count > 0 && <button type="button" onClick={() => clear()} className="text-muted-foreground hover:text-foreground">Reset all ({count})</button>}
       </div>
     </div>
