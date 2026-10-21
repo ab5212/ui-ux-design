@@ -25,19 +25,44 @@ function Segmented<T extends string>({ label, value, options, onChange }: { labe
 }
 
 /** Writes everything (style, colors, layout, element edits) to the user's files. */
-export function SaveBar({ settings, className }: { settings: Settings; className?: string }) {
+export function SaveBar({ settings, app, className }: { settings: Settings; app?: boolean; className?: string }) {
   const [status, setStatus] = useState("");
-  const onSave = () => {
+  const fonts = fontLinks(settings);
+  const onSave = async () => {
     setStatus("Saving…");
-    save(settings).then((r) => setStatus(`Saved to ${r.file}.${r.files.length ? " Also wrote " + r.files.join(", ") + "." : ""}${fontLinks(settings).length ? " Add the Google Fonts link to your app: " + fontLinks(settings).join(" ") : ""}`), (e: Error) => setStatus(`Not saved: ${e.message}`));
+    try {
+      const appUrl = app ? localStorage.getItem("playground-app-url") : null;
+      if (app && !appUrl) { setStatus("Open your app first (enter its address and press Open my app)."); return; }
+      if (appUrl) {
+        // Writing into the user's app: show exactly what will change, then ask.
+        const key = `playground-app-dir:${new URL(appUrl).origin}`;
+        let dir = localStorage.getItem(key) ?? undefined, plan;
+        for (;;) {
+          try { plan = (await save(settings, { url: appUrl, dir, dry: true })).plan!; break; } catch (e) {
+            if ((e as Error).message !== "NEED_APP_DIR") throw e;
+            const d = window.prompt("I couldn't find your app's folder. Paste its full path (the folder that has package.json or index.html):");
+            if (!d) { setStatus("Cancelled. Nothing was changed."); return; }
+            dir = d.trim();
+          }
+        }
+        const ok = window.confirm(`Update your app?\n\nFolder: ${plan.dir}\n\nFiles written:\n${plan.files.map((f) => "  • " + f).join("\n")}\n\n${plan.added.length ? `Added to ${plan.entry}:\n${plan.added.map((a) => "  " + a).join("\n")}` : `${plan.entry} already loads them.`}`);
+        if (!ok) { setStatus("Cancelled. Nothing was changed."); return; }
+        const r = await save(settings, { url: appUrl, dir });
+        if (dir) localStorage.setItem(key, dir);
+        setStatus(`Updated your app in ${r.file}. Written: ${r.files.join(", ")}. Fonts load from the theme file.`);
+        return;
+      }
+      const r = await save(settings);
+      setStatus(`Saved to ${r.file}.${r.files.length ? " Also wrote " + r.files.join(", ") + "." : ""}${fonts.length ? " Add the Google Fonts link to your app: " + fonts.join(" ") : ""}`);
+    } catch (e) { setStatus(`Not saved: ${(e as Error).message}`); }
   };
   return (
     <div className={cn("sticky bottom-0 z-10 -mx-1 mt-6 grid gap-2 border-t bg-surface px-1 pb-5 pt-4", className)}>
       <button type="button" onClick={onSave}
         className="h-10 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-        Save to code
+        {app ? "Save to my app" : "Save to code"}
       </button>
-      <p role="status" className="min-h-4 break-all text-xs text-muted-foreground">{status || "Writes these choices into your files."}</p>
+      <p role="status" className="min-h-4 break-all text-xs text-muted-foreground">{status || (app ? "Writes these changes into your app's files." : "Writes these choices into your files.")}</p>
     </div>
   );
 }

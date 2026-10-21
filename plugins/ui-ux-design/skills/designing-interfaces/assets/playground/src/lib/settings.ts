@@ -73,10 +73,14 @@ const readOps = () => { try { return JSON.parse(localStorage.getItem("playground
 const readEdits = () => { try { return JSON.parse(localStorage.getItem("playground-edits") || "{}"); } catch { return {}; } };
 const readDashboard = () => { try { return JSON.parse(localStorage.getItem("playground-dashboard") || "null"); } catch { return null; } };
 
-export async function save(s: Settings) {
-  const res = await fetch("/__save-tokens", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ preset: s.preset, vars: toVars(s), colors: s.colors, dashboard: readDashboard(), edits: readEdits(), ops: readOps() }) });
+export interface SavePlan { dir: string; entry: string; files: string[]; added: string[] }
+export interface SaveTarget { url: string; dir?: string; dry?: boolean }
+
+/** Without a target it writes into the playground's tokens file. With one (the app in "Your app") it writes into that app. */
+export async function save(s: Settings, app?: SaveTarget) {
+  const res = await fetch("/__save-tokens", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ preset: s.preset, vars: toVars(s), colors: s.colors, dashboard: readDashboard(), edits: readEdits(), ops: readOps(), fonts: fontLinks(s), app: app?.url, appDir: app?.dir, dry: app?.dry }) });
   if (!res.ok) throw new Error(await res.text());
-  return (await res.json()) as { file: string; files: string[] };
+  return (await res.json()) as { file: string; files: string[]; plan?: SavePlan };
 }
 
 const KEY = "playground-settings";

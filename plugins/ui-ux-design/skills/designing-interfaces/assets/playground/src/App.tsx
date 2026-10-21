@@ -173,7 +173,7 @@ export default function App() {
               : view === "app" && panel === "layers" ? <LayersPanel tree={tree} selected={selection?.multiIds ?? []} />
               : view === "app" && panel === "insert" ? <InsertPanel selection={selection} />
               : <Toolbar settings={settings} update={update} footer={false} />}
-            <SaveBar settings={settings} />
+            <SaveBar settings={settings} app={view === "app"} />
           </aside>
         </div>
       </ToastProvider>

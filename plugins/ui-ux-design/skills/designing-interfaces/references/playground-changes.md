@@ -2,7 +2,7 @@
 
 The playground's **Your app** view lets a user restyle and restructure their running app, then press **Save to code**. Style changes become CSS. Structural changes (move, insert, delete, group, text) cannot be written safely by the playground, so they are saved as a change list for you to apply to the real source files, after the user approves.
 
-## Files (beside the user's tokens file)
+## Files (in the app folder when saved with "Save to my app", otherwise beside the playground's tokens file)
 
 | File | What it holds | What to do |
 |---|---|---|

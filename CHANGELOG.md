@@ -2,6 +2,9 @@
 
 Bump `version` in **both** plugin manifests for every release; users only receive updates when it changes.
 
+## 1.5.2
+- **Save to my app**: in the Your app view Save now writes into the running app itself. It finds the app folder from its port, previews the files and the one-line import it will add (or `<link>` tags for plain HTML), asks, then writes `playground-theme.css` (with the Google Fonts `@import`), `playground-overrides.css`, `playground-changes.json` and `playground-layout.json`. Before this, Save wrote into the playground's own files, so the app never changed.
+
 ## 1.5.1
 - Playground: with several elements selected (Shift+click on the canvas or in Layers), every Element control (radius, color, size, padding, shadow, layout…) applies to all of them, Delete and Duplicate act on the whole selection, and Group keeps page order and is disabled when the elements are in different containers.
 
