@@ -64,6 +64,10 @@ codex plugin marketplace upgrade ui-ux-design      # Git-backed marketplaces
 
 Versions are pinned by the `version` field in the manifests, so users get an update only when it changes (see `CHANGELOG.md`).
 
+**Get updates automatically (Claude Code).** Auto-update is off by default for third-party marketplaces. Turn it on once: run `/plugin`, open **Marketplaces**, select `ui-ux-design` and switch on **Enable auto-update**. Claude Code then checks in the background at startup and shows `Plugin updated: ui-ux-design · Run /reload-plugins to apply`; the new version also loads on the next launch. Teams and admins can pre-enable it for everyone with `extraKnownMarketplaces` and `autoUpdate: true` in managed settings. A marketplace cannot turn auto-update on for users or push them a notice, so announce releases here and on the GitHub Releases page.
+
+**After a plugin update, refresh your playground.** The playground is a copy, so run the `--update` command in "Updating an existing playground" below.
+
 ## Install as a plain skill (any agent that reads `SKILL.md`)
 
 ```bash
