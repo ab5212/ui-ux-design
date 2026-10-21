@@ -2,6 +2,9 @@
 
 Bump `version` in **both** plugin manifests for every release; users only receive updates when it changes.
 
+## 1.3.2
+- README: how to turn on auto-update in Claude Code and how to refresh an existing playground after a plugin update. No code changes.
+
 ## 1.3.1
 - `scaffold-playground.sh --update` refreshes an existing playground to the installed skill version, keeping the saved Save-to-code choices and `playground-layout.json`, and backing up the old `tokens.css`. Updating the plugin never changed playgrounds already created.
 
